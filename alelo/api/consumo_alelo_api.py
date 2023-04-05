@@ -6,14 +6,26 @@ import multiprocessing
 import time
 import os
 import logging
-
+from datetime import datetime
+from backup_limpeza import backup_limpeza_simples
 # obteendo o caminho do diretório atual e construindo o caminho do arquivo a partir dele
 current_dir = os.getcwd()
 file_localidades = current_dir.replace(r'alelo\api', r'localidades\localidades.txt')
 file_dados = current_dir.replace(r'api', r'dados\BASE_ALELO.csv')
+file_logs = current_dir.replace(r'alelo\api',r'logs\alelo.log')
+folder_dados = file_dados.replace(r'BASE_ALELO.csv', '')
 
 # configurando o registro de logs
-logging.basicConfig(level=logging.DEBUG, filename="consumo_alelo.log",encoding='utf-8', format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=logging.DEBUG, filename=file_logs,encoding='utf-8', format="%(asctime)s - %(levelname)s - %(message)s")
+
+# difinindo datazip
+datazip = datazip = f'{datetime.now().month-1}-{datetime.now().year}'
+
+# Filtra todos os arquivos csv da pasta
+arquivos_csv = list(filter(lambda x: '.csv' in x, os.listdir(folder_dados)))
+# Se a pasta não estiver vazia faz o backup dos arquivos e limpa ela.
+if len(arquivos_csv) >= 1:
+        backup_limpeza_simples(pasta=folder_dados, nome_zipado=f'{folder_dados}alelo_{datazip}.zip')
 
 # Abrindo, lendo e salvando o arquivo com os municípios
 with open(file_localidades,'r', encoding='UTF-8') as municipios:
@@ -30,7 +42,7 @@ def processo(municipio):
     try:
         localidade = municipio.split('\t')
         logging.info(f'pegando dados de {localidade[0]}')
-        base = get_establishments(token=token['access_token'],latitude=localidade[3].replace('\n', ''), longitude=localidade[2],raio=5)
+        base = get_establishments(token=token['access_token'],latitude=localidade[3].replace('\n', ''), longitude=localidade[2],raio=15)
         dados = pd.json_normalize(base)
         dados = dados[['establishmentName','address','district',
                     'cityName','stateName', 'zip','phoneAreaCode',
