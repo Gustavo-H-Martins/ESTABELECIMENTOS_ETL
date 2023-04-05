@@ -9,23 +9,9 @@ municipios
 token = get_token()
 def processar(municipio):
     try:
-        municipio.split('\t')
-        base = get_establishments(token=token['access_token'],latitude=municipio[3].replace('\n', ''), longitude=municipio[2],raio=5)
-        dados = pl.from_pandas(pd.json_normalize(base))
-        dados = dados.select(['establishmentName','address','district','cityName','stateName', 'zip','phoneAreaCode','phoneNumber','latitude', 'longitude'])
-        dados = dados.select([
-        'establishmentName'.alias('ESTABELECIMENTOS'),
-        'address'.alias('ENDERECO'),
-        'district'.alias('BAIRRO'),
-        'cityName'.alias('MUNICIPIO'),
-        'stateName'.alias('UF'),
-        'zip'.alias('CEP'),
-        'phoneAreaCode'.alias('DDD'),
-        'phoneNumber'.alias('TELEFONE'),
-        'latitude'.alias('LATITUDE'),
-        'longitude'.alias('LONGITUDE')
-        ])
-        dados.write_csv('../dados/BASE_ALELO.csv',has_header=False,separator=';', mode='a', encoding='utf-8')
+        municipio = municipio.split('\t')
+        dados = get_establishments(token=token['access_token'],latitude=municipio[3].replace('\n', ''), longitude=municipio[2],raio=5)
+        dados.write_csv(r'../dados/BASE_ALELO.csv',has_header=False,separator=';', mode='a', encoding='utf-8')
     except Exception as e:
         # registra a posição do loop em que o erro ocorreu
         print(f"Erro na posição {municipio}: {e}")

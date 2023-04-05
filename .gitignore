@@ -1,3 +1,5 @@
 # ignore o venv
 .venv
 
+# ignore os pycache também fiotin?
+*.pyc 
