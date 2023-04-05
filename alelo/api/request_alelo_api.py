@@ -54,7 +54,6 @@ def get_establishments(token:str ,longitude:str ='-46.6395571', latitude:str= '-
     """
     import requests
     import pandas as pd
-    import polars as pl
     url = f"https://api.alelo.com.br/alelo/prd/acceptance-network/establishments?longitude={longitude}&latitude={latitude}&distance={raio}&pageNumber={page}&pageSize={pageSize}&type=POSITION&product={product}"
 
     payload={}
@@ -81,21 +80,8 @@ def get_establishments(token:str ,longitude:str ='-46.6395571', latitude:str= '-
     response = requests.request("GET", url, headers=headers, data=payload)
 
     base =  response.json()['establishments']
-    dados = pl.from_pandas(pd.json_normalize(base))
-    dados = dados.select(['establishmentName','address','district','cityName','stateName', 'zip','phoneAreaCode','phoneNumber','latitude', 'longitude'])
-    dados = dados.select([
-    pl.col('establishmentName').alias('ESTABELECIMENTOS'),
-    pl.col('address').alias('ENDERECO'),
-    pl.col('district').alias('BAIRRO'),
-    pl.col('cityName').alias('MUNICIPIO'),
-    pl.col('stateName').alias('UF'),
-    pl.col('zip').alias('CEP'),
-    pl.col('phoneAreaCode').alias('DDD'),
-    pl.col('phoneNumber').alias('TELEFONE'),
-    pl.col('latitude').alias('LATITUDE'),
-    pl.col('longitude').alias('LONGITUDE')
-    ])
-    return dados
+    return base
+
 def get_token():
     import requests
 
