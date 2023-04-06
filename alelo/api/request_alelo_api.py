@@ -53,7 +53,6 @@ def get_establishments(token:str ,longitude:str ='-46.6395571', latitude:str= '-
         json: retorna um json com dados de estabelecimentos da base da provedora de cartão voucher Alelo
     """
     import requests
-    import pandas as pd
     url = f"https://api.alelo.com.br/alelo/prd/acceptance-network/establishments?longitude={longitude}&latitude={latitude}&distance={raio}&pageNumber={page}&pageSize={pageSize}&type=POSITION&product={product}"
 
     payload={}

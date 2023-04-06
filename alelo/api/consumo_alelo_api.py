@@ -19,7 +19,7 @@ folder_dados = file_dados.replace(r'BASE_ALELO.csv', '')
 logging.basicConfig(level=logging.DEBUG, filename=file_logs,encoding='utf-8', format="%(asctime)s - %(levelname)s - %(message)s")
 
 # difinindo datazip
-datazip = datazip = f'{datetime.now().month-1}-{datetime.now().year}'
+datazip = datazip = f'{datetime.now().month}-{datetime.now().year}'
 
 # Filtra todos os arquivos csv da pasta
 arquivos_csv = list(filter(lambda x: '.csv' in x, os.listdir(folder_dados)))

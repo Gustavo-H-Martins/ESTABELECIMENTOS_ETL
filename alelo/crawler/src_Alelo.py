@@ -17,8 +17,11 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import logging
 
+# obteendo o caminho do diretório atual e construindo o caminho do arquivo a partir dele
+current_dir = os.getcwd()
+file_logs = current_dir.replace(r'alelo\api',r'logs\alelo.log')
 # gerando log
-logging.basicConfig(level=logging.INFO, filename="src_Alelo.log",encoding='utf-8', format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=logging.DEBUG, filename=file_logs,encoding='utf-8', format="%(asctime)s - %(levelname)s - %(message)s")
 
 # pegando a resolução da tela
 
@@ -27,7 +30,7 @@ resolucao = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 
 
 hoje = datetime.datetime.today().strftime("%B")
-arquivocsv = f'{hoje}_Estabelecimentos_Alelo.csv'
+arquivocsv = current_dir.replace(r'crawler', r'dados\src_BASE_ALELO.csv')
 
 """
    Omite o Navegador na Execução
