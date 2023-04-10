@@ -35,7 +35,7 @@ with open(file_localidades,'r', encoding='UTF-8') as municipios:
 
 # Obetendo a chave de acesso
 token = get_token()
-print(token['access_token'])
+#print(token['access_token'])
 
 # O for as vezes é melhor que o paralelismo
 def processo(municipio):
@@ -52,7 +52,21 @@ def processo(municipio):
                                     'cityName':'MUNICIPIO', 'stateName': 'UF',
                                     'zip':'CEP','phoneAreaCode':'DDD','phoneNumber':'TELEFONE', 
                                     'latitude':'LATITUDE','longitude':'LONGITUDE' }, inplace=True)
-        dados.to_csv(file_dados,header=False,sep=';', mode='a', encoding='utf-8', index=False)
+                # Salvar em csv em modo incremental
+        if os.path.isfile(file_dados) and os.path.getsize(file_dados) > 0:
+            """
+                Se o arquivo já existir e tiver algum tamanho,
+                escrever o dataframe sem cabeçalho
+            """
+            dados.to_csv(file_dados,header=False,sep=';', mode='a', encoding='utf-8', index=False)
+        else:
+            """
+                Se o arquivo não existir ou estiver vazio,
+                escrever o dataframe com cabeçalho
+                Adicionar o dataframe ao arquivo CSV existente
+            """
+            dados.to_csv(file_dados,sep=';', mode='a', encoding='utf-8', index=False)
+        
     except Exception as e:
         logging.warning(f"deu erro aqui : [{e}] mas vams continuar a brincadeira")
         pass
