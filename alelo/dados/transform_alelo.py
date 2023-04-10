@@ -37,6 +37,7 @@ dados  = pd.read_csv(base_alelo,
                         names=cabecalho)
 
 # a parte de transform de fato está toda aqui, bem simples:
+# com quaanto de dadps começou?
 logging.info(f'Tinham: {dados.shape[0]} dados')
 
 # Remove os dados duplicados, estranho que sempre aparecem
@@ -49,15 +50,18 @@ dados['BAIRRO'] = dados['BAIRRO'].str.upper()
 
 # criando a coluna "BANDEIRA", é bom pra evitar problema né fiotin?
 dados['BANDEIRA'] = 'ALELO'
+dados['EMAIL'] = ''
 
 # concatena o ddd + telefon
 dados['TELEFONE'] = dados['DDD'].map(str).replace('.0','')+ ' ' + dados['TELEFONE'].map(str).replace('.0', '')
-
+"""
 # tá ai uma coluna inútil, mas com muita utilidade
 dados['Cidade_UF'] = dados['MUNICIPIO'].map(str) + ', ' + dados['UF'].map(str)
-
+"""
 # filtrando as colunas que vamos usar depois de toda a brincadeira
-dados = dados[['ESTABELECIMENTOS',	'ENDERECO',	'BAIRRO',	'MUNICIPIO',	'UF',	'CEP',	'TELEFONE',	'LATITUDE',	'LONGITUDE']]
+dados = dados[['ESTABELECIMENTOS',	'ENDERECO',	'BAIRRO',	'MUNICIPIO',	'UF',	'CEP',	'TELEFONE', 'EMAIL', 'LATITUDE',	'LONGITUDE', 'BANDEIRA']]
+
+# conta quando de dados sobrou
 logging.info(f'ficaram: {dados.shape[0]} dados')
 
 # adicionando a coluna padrão ibge, é muito útil para colocar em mapas e essas coisas legais de geoprocessamento
@@ -74,6 +78,12 @@ for i in dados['TELEFONE']:
     else:
         telefone.append(str(i))
 dados['TELEFONE'] = telefone
+
+# conta quantos de dados tinham antes de tirar os telefones nulos
+logging.info(f'tinham: {dados.shape[0]} dados antes de comparar telefones nulos')
+dados.drop(dados[dados['TELEFONE'] == 'Indisponível'].index, inplace=True)
+# contando quantos ficaram depois de tirar os nulos
+logging.info(f'ficaram: {dados.shape[0]} dados após a operação de dropagem')
 
 # Salva tudo novamente desta vez com um csv e outro excel, a galera gosta de "variedades"
 dados.to_csv(base_alelo,sep=';', index=False, encoding='utf-8')

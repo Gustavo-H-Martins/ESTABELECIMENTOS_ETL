@@ -1,9 +1,9 @@
-def  get_estabelecimentos(latitude:float = -23.5673865, longitde:float = -46.5703831821127, raio:float = 5):
+def  get_estabelecimentos(latitude:str = '-23.5673865', longitude:str = '-46.5703831821127', raio:float = 5):
     """Resumo para a função get_estabelecimentos
 
     Args:
         latitude (float, optional): número float negativo representando o ponto de latitude para a  geolocalização
-        longitde (float, optional): número float negativo representando o ponto de longitude para a geolocalização.
+        longitude (float, optional): número float negativo representando o ponto de longitude para a geolocalização.
         raio (float, optional): número float positivo representando o raio de busca dos dados na api.
     """
     # libs utilizadas
@@ -15,7 +15,7 @@ def  get_estabelecimentos(latitude:float = -23.5673865, longitde:float = -46.570
         "resourcePath": "estabelecimentos",
         "parameters": {
             "geoinfo.lat": latitude,
-            "geoinfo.lng": longitde,
+            "geoinfo.lng": longitude,
             "geoinfo.rad": raio,
             "size": 10000,
             "produtos": "2",
@@ -43,4 +43,21 @@ def  get_estabelecimentos(latitude:float = -23.5673865, longitde:float = -46.570
     response = requests.post(url, headers=headers, json=payload)
     # Retorna um json que é aqui vou reparar e buscar somente o campo "content"
     base = response.json()["content"]
-    return base
+    data = []
+    for d in base:
+        data.append({
+            'ESTABELECIMENTOS': d['nomeFantasia'],
+            'CEP': d['cep'],
+            'LOGRADOURO': d['logradouro'],
+            'NUMERO': d['numero'],
+            'BAIRRO': d['bairro'],
+            'MUNICIPIO': d['cidade'],
+            'UF': d['uf'],
+            'PAIS': d['pais'],
+            'EMAIL': d.get('email', ''),
+            'DDD': d['telefones'][0]['ddd'] if d['telefones'] else '',
+            'TELEFONE': d['telefones'][0]['telefone'] if d['telefones'] else '',
+            'LATITUDE': d['geoinfo']['lat'],
+            'LONGITUDE': d['geoinfo']['lng']
+        })
+    return data
