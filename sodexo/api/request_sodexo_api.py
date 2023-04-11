@@ -1,4 +1,20 @@
 def  get_establishments(latitude:str = '-19.6447323', longitde:str = '-43.9044951', raio:str = '15', delivery:str = 'false', cartao:str = '516'):
+    """RESUMO DA FUNÇÃO get_establishments
+
+    ARGUMENTOS:
+        latitude (str, optional): LATITUDE PARA BUSCAR DADOS NA API. Defaults to '-19.6447323'.
+        longitde (str, optional): LONGITUDE PARA BUSCAR DADOS NA API. Defaults to '-43.9044951'.
+        raio (str, optional): RAIO quadrado onde vamos mapear os estabelecimentos. Defaults to '15'.
+        delivery (str, optional): trabalha com delivery sim ou não ?. Defaults to 'false'.
+        cartao (str, optional): tipo de produto utilizado em uma lista que é [516, 512, 526, 5267 etc]. Defaults to '516'.
+
+    RETORNO:
+        results (json): retorna um json com as observações 
+        ['ESTABELECIMENTO'  'RAZAO_SOCIAL'  'TELEFONE'
+        'EMAIL'  'SITE'  'TIPO_LOGRADOURO'  'LOGRADOURO'
+        'NUMERO'  'COMPLEMENTO'  'BAIRRO'  'CIDADE'  'ESTADO'
+        'CEP'  'LATITUDE'  'LONGITUDE'  'BANDEIRA'  'LISTA_NEGRA']
+    """
     # libs utilizadas
     import requests
     import json
