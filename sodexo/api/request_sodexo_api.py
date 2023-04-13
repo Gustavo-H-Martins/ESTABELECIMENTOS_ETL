@@ -1,4 +1,4 @@
-def  get_establishments(latitude:str = '-19.6447323', longitde:str = '-43.9044951', raio:str = '15', delivery:str = 'false', cartao:str = '516'):
+def  get_establishments(latitude:str = '-19.6447323', longitude:str = '-43.9044951', raio:str = '15', delivery:str = 'false', cartao:str = '516'):
     """RESUMO DA FUNÇÃO get_establishments
 
     ARGUMENTOS:
@@ -10,10 +10,10 @@ def  get_establishments(latitude:str = '-19.6447323', longitde:str = '-43.904495
 
     RETORNO:
         results (json): retorna um json com as observações 
-        ['ESTABELECIMENTO'  'RAZAO_SOCIAL'  'TELEFONE'
-        'EMAIL'  'SITE'  'TIPO_LOGRADOURO'  'LOGRADOURO'
-        'NUMERO'  'COMPLEMENTO'  'BAIRRO'  'CIDADE'  'ESTADO'
-        'CEP'  'LATITUDE'  'LONGITUDE'  'BANDEIRA'  'LISTA_NEGRA']
+        ['ESTABELECIMENTOS' , 'RAZAO_SOCIAL',  'TELEFONE',
+        'EMAIL' , 'SITE'  ,'TIPO_LOGRADOURO',  'LOGRADOURO',
+        'NUMERO' , 'COMPLEMENTO' , 'BAIRRO',  'MUNICIPIO',  'UF',
+        'CEP' , 'LATITUDE' , 'LONGITUDE' , 'BANDEIRA' , 'LISTA_NEGRA']
     """
     # libs utilizadas
     import requests
@@ -26,7 +26,7 @@ def  get_establishments(latitude:str = '-19.6447323', longitde:str = '-43.904495
     'hasDelivery': f'{delivery}',
     'proximity': f'{raio}km',
     'lat': f'{latitude}',
-    'lon': f'{longitde}',
+    'lon': f'{longitude}',
     'startAt': '0',
     'limit': '25'
     }
@@ -68,7 +68,7 @@ def  get_establishments(latitude:str = '-19.6447323', longitde:str = '-43.904495
         for hit in hits:
             source = hit["_source"]
             establishment = {
-                "ESTABELECIMENTO": source["fantasyname"],
+                "ESTABELECIMENTOS": source["fantasyname"],
                 "RAZAO_SOCIAL": source["socialname"],
                 "TELEFONE": source["phones"],
                 "EMAIL": source["email"],
@@ -78,8 +78,8 @@ def  get_establishments(latitude:str = '-19.6447323', longitde:str = '-43.904495
                 "NUMERO": source["number"],
                 "COMPLEMENTO": source["complement"],
                 "BAIRRO": source["town"],
-                "CIDADE": source["city"],
-                "ESTADO": source["state"],
+                "MUNICIPIO": source["city"],
+                "UF": source["state"],
                 "CEP": source["zipcode"],
                 "LATITUDE": source['location']['lat'],
                 "LONGITUDE":source['location']['lon'],

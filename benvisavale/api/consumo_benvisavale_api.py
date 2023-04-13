@@ -10,7 +10,7 @@ import logging
 from datetime import datetime
 from backup_limpeza import backup_limpeza_simples
 # obteendo o caminho do diretório atual e construindo o caminho do arquivo a partir dele
-current_dir = os.getcwd()
+current_dir = os.path.dirname(os.path.abspath(__file__))
 file_localidades = current_dir.replace(r'benvisavale\api', r'localidades\localidades.txt')
 file_dados = current_dir.replace(r'api', r'dados\BASE_BENVISAVALE.csv')
 file_logs = current_dir.replace(r'benvisavale\api',r'logs\benvisavale.log')

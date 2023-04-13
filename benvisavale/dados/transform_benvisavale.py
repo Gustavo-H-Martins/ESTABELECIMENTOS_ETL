@@ -8,14 +8,14 @@ warnings.filterwarnings('ignore')
 pd.option_context(10,5)
 
 #define o caminho do diretório atual
-current_dir = os.getcwd()
+current_dir = os.path.dirname(os.path.abspath(__file__))
 file_logs = current_dir.replace(r'benvisavale\dados',r'logs\benvisavale.log')
 
 # configurando o registro de logs
 logging.basicConfig(level=logging.DEBUG, filename=file_logs,encoding='utf-8', format="%(asctime)s - %(levelname)s - %(message)s")
 
 # pega o arquivo gerado
-base_benvisavale = r'./BASE_BENVISAVALE.csv'
+base_benvisavale = current_dir + r'\BASE_BENVISAVALE.csv'
 
 # qual cabeçalho nós usamos mesmo?
 cabecalho = ['ESTABELECIMENTOS',
@@ -68,7 +68,7 @@ dados['Cidade_UF'] = dados['MUNICIPIO'].map(str) + ', ' + dados['UF'].map(str)
 """
 
 # filtrando as colunas que vamos usar depois de toda a brincadeira
-dados = dados[['ESTABELECIMENTOS',	'ENDERECO',	'BAIRRO',	'MUNICIPIO',	'UF',	'CEP',	'TELEFONE', 'EMAIL', 'LATITUDE',	'LONGITUDE', 'BANDEIRA']]
+dados = dados[['ESTABELECIMENTOS', 'ENDERECO', 'BAIRRO', 'MUNICIPIO', 'UF', 'CEP', 'TELEFONE', 'EMAIL', 'LATITUDE', 'LONGITUDE', 'BANDEIRA']]
 
 # conta quando de dados sobrou
 logging.info(f'ficaram: {dados.shape[0]} dados')
@@ -98,4 +98,6 @@ logging.info(f'ficaram: {dados.shape[0]} dados após a operação de dropagem')
 
 # Salva tudo novamente desta vez com um csv e outro excel, a galera gosta de "variedades"
 dados.to_csv(base_benvisavale,sep=';', index=False, encoding='utf-8')
-dados.to_excel('./BASE_BENVISAVALE.xlsx',sheet_name='BASE ALELO', index=False)
+base_benvisavale_xlsx = base_benvisavale.replace('.csv', '.xlsx')
+
+dados.to_excel(base_benvisavale_xlsx,sheet_name='BASE BEN VISA VALE', index=False)

@@ -7,14 +7,14 @@ import logging
 warnings.filterwarnings('ignore')
 pd.option_context(10,5)
 
-current_dir = os.getcwd()
+current_dir = os.path.dirname(os.path.abspath(__file__))
 file_logs = current_dir.replace(r'alelo\dados',r'logs\alelo.log')
 # configurando o registro de logs
 logging.basicConfig(level=logging.DEBUG, filename=file_logs,encoding='utf-8', format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 # pega o arquivo gerado
-base_alelo = r'./BASE_ALELO.csv'
+base_alelo =current_dir + r'\BASE_ALELO.csv'
 
 # qual cabeçalho nós usamos mesmo??
 cabecalho = ['ESTABELECIMENTOS',
@@ -87,4 +87,6 @@ logging.info(f'ficaram: {dados.shape[0]} dados após a operação de dropagem')
 
 # Salva tudo novamente desta vez com um csv e outro excel, a galera gosta de "variedades"
 dados.to_csv(base_alelo,sep=';', index=False, encoding='utf-8')
-dados.to_excel('./BASE_ALELO.xlsx',sheet_name='BASE ALELO', index=False)
+base_alelo_xlsx = base_alelo.replace('.csv', '.xlsx')
+
+dados.to_excel(base_alelo_xlsx,sheet_name='BASE ALELO', index=False)
