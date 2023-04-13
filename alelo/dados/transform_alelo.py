@@ -59,7 +59,7 @@ dados['TELEFONE'] = dados['DDD'].map(str).replace('.0','')+ ' ' + dados['TELEFON
 dados['Cidade_UF'] = dados['MUNICIPIO'].map(str) + ', ' + dados['UF'].map(str)
 """
 # filtrando as colunas que vamos usar depois de toda a brincadeira
-dados = dados[['ESTABELECIMENTOS',	'ENDERECO',	'BAIRRO',	'MUNICIPIO',	'UF',	'CEP',	'TELEFONE', 'EMAIL', 'LATITUDE',	'LONGITUDE', 'BANDEIRA']]
+dados = dados[['ESTABELECIMENTOS',	'ENDERECO',	'BAIRRO',	'MUNICIPIO',	'UF',	'CEP',	'TELEFONE', 'EMAIL', 'LATITUDE','LONGITUDE', 'BANDEIRA']]
 
 # conta quando de dados sobrou
 logging.info(f'ficaram: {dados.shape[0]} dados')
