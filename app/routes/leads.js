@@ -50,4 +50,42 @@ router.route("/estabelecimentos")
                 );
         });
     });
+// GetAll-contagem
+router.route("/estabelecimentos/counts")
+  .get(function(req, res, next) {
+    const clientIp = req.ip;
+    const bandeira = req.query.bandeira ? [req.query.bandeira.toUpperCase()] : `TICKET`;
+    const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
+    const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
+    const groupby = req.query.groupby ? [req.query.groupby.toLocaleUpperCase()] : null;
+
+    let query = `SELECT COUNT(*) as TOTAL FROM tb_${req.query.bandeira.toLowerCase()}`;
+    let conditions = [];
+    if (bandeira) conditions.push(`BANDEIRA = "${bandeira}"`);
+    if (uf) conditions.push(`Estado = "${uf}"`);
+    if (cidade) conditions.push(`Municipio = "${cidade}"`);
+    if (conditions.length > 0) query += ` WHERE ${conditions.join(' AND ')}`;
+    if (groupby) query += ` GROUP BY ${groupby}`;
+    if (groupby) query = query.replace('COUNT(*)', `${groupby}, COUNT(*)`)
+
+    //console.log(query)
+
+    db.all(query, (err, rows) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      //console.log(query)
+      // Formatando data e hora para incluir no log
+      const date = new Date()
+      const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // formata a data como DD/MM/AAAA
+      const formattedTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`; // formata a hora como HH:MM:SS
+      dataChamada = `Data: ${formattedDate} - Hora: ${formattedTime}`
+      logToDatabase(clientIp, `Retornando ${rows.length} dados de "${bandeira}" no estado de "${uf}" município de ${cidade}`, 'INFO', dataChamada)
+      res.status(200).json(
+        rows
+      );
+    });
+  })
+
 module.exports = router;

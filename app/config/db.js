@@ -13,7 +13,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
     if (err) {
       console.error(err.message);
     }
-    console.log('conectado no banco de dados "EXTRACAO_DE_LEADS".');
+    console.log('conectado no banco de dados.');
 });
 
 module.exports = db;
