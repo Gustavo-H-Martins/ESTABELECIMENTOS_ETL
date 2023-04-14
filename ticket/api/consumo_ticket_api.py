@@ -46,7 +46,7 @@ def processo(municipio):
                 escrever o dataframe sem cabeçalho
             """
             with open(file_dados, mode='ab') as f:
-                dados.write_csv(f, has_header=False, separator=';')
+                dados.write_csv(f,has_header=False ,separator=';', batch_size=1024)
 
         else:
             """
@@ -54,7 +54,7 @@ def processo(municipio):
                 escrever o dataframe com cabeçalho
                 Adicionar o dataframe ao arquivo CSV existente
             """
-            dados.write_csv(file_dados, has_header=True, separator=';')
+            dados.write_csv(file_dados, separator=';', batch_size=1024)
 
     except Exception as e:
         logging.warning(f"deu erro aqui : [{e}] mas vamos continuar a brincadeira")
