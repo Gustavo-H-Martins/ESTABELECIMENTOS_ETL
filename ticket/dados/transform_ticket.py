@@ -48,6 +48,16 @@ dados = dados[['CNPJ', 'ESTABELECIMENTOS', 'ENDERECO', 'BAIRRO', 'CIDADE', 'UF',
 # conta quando de dados sobrou
 logging.info(f'ficaram: {dados.shape[0]} dados')
 
+# tirando os telefones fakes ou sem valor interessante
+telefone = []
+for i in dados['TELEFONE']:
+    if len(str(i)) < 7:
+        telefone.append('Indisponível')
+    else:
+        telefone.append(str(i))
+dados['TELEFONE'] = telefone
+
+
 # conta quantos de dados tinham antes de tirar os telefones nulos
 logging.info(f'ficaram: {dados.shape[0]} dados')
 dados.drop(dados[dados['TELEFONE'] == 'Indisponível'].index, inplace=True)

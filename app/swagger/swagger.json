@@ -1,17 +1,17 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "2.0.0",
-    "title": "Leads Abrasel",
-    "description": "Api de acessso a registros de leads de vouchers para estabelecimentos associados abrasel."
+    "version": "1.0.0",
+    "title": "API VOUCHER LEADS",
+    "description": ""
   },
   "host": "localhost:3000",
   "basePath": "/",
   "schemes": [
-    "https","http"
+    "http"
   ],
   "paths": {
-    "/api/leads/v2/estabelecimentos": {
+    "/api/leads/v1/estabelecimentos": {
       "get": {
         "description": "",
         "parameters": [
@@ -32,6 +32,11 @@
           },
           {
             "name": "cidade",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "bairro",
             "in": "query",
             "type": "string"
           },
@@ -43,128 +48,6 @@
           {
             "name": "pageSize",
             "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/api/leads/v2/estabelecimentos/bandeira=all/estado={uf}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "uf",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "x-forwarded-for",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/api/leads/v2/estabelecimentos/bandeira={bandeira}/estado=all": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "bandeira",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "x-forwarded-for",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/api/leads/v2/estabelecimentos/bandeira={bandeira}/estado={uf}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "bandeira",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "uf",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "x-forwarded-for",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/api/leads/v2/estabelecimentos/bandeira={bandeira}/estado={uf}/cidade={cidade}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "bandeira",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "uf",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "cidade",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "x-forwarded-for",
-            "in": "header",
             "type": "string"
           }
         ],
