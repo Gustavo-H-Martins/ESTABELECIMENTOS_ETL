@@ -1,6 +1,5 @@
 # Modulos e libs
 from request_alelo_api import get_token, get_establishments
-import pandas as pd
 import polars as pl
 import multiprocessing
 import time
@@ -43,34 +42,25 @@ def processo(municipio):
         localidade = municipio.split('\t')
         logging.info(f'pegando dados de {localidade[0]}')
         base = get_establishments(token=token['access_token'],latitude=localidade[3].replace('\n', ''), longitude=localidade[2],raio=15)
-        dados = pd.json_normalize(base)
-        dados = dados[['establishmentName','address','district',
-                    'cityName','stateName', 'zip','phoneAreaCode',
-                    'phoneNumber','latitude', 'longitude']]
-        dados.rename(columns={'establishmentName':'ESTABELECIMENTOS',
-                                    'address':'ENDERECO', 'district': 'BAIRRO',
-                                    'cityName':'MUNICIPIO', 'stateName': 'UF',
-                                    'zip':'CEP','phoneAreaCode':'DDD','phoneNumber':'TELEFONE', 
-                                    'latitude':'LATITUDE','longitude':'LONGITUDE' }, inplace=True)
+        dados = pl.DataFrame(base)
                 # Salvar em csv em modo incremental
         if os.path.isfile(file_dados) and os.path.getsize(file_dados) > 0:
             """
                 Se o arquivo já existir e tiver algum tamanho,
                 escrever o dataframe sem cabeçalho
             """
-            dados.to_csv(file_dados,header=False,sep=';', mode='a', encoding='utf-8', index=False)
+            with open(file_dados, mode="ab") as f:
+                dados.write_csv(f, has_header=False, separator=';', batch_size=1024)
         else:
             """
                 Se o arquivo não existir ou estiver vazio,
                 escrever o dataframe com cabeçalho
                 Adicionar o dataframe ao arquivo CSV existente
             """
-            dados.to_csv(file_dados,sep=';', mode='a', encoding='utf-8', index=False)
-        
+            dados.write_csv(file_dados,separator=';', batch_size=1024)
     except Exception as e:
         logging.warning(f"deu erro aqui : [{e}] mas vams continuar a brincadeira")
         pass
 if __name__ == '__main__':
     with multiprocessing.Pool(processes=3) as pool:
-        time.sleep(5)
         pool.map(processo, localidades)

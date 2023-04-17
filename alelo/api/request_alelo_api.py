@@ -78,7 +78,24 @@ def get_establishments(token:str ,longitude:str ='-46.6395571', latitude:str= '-
 
     response = requests.request("GET", url, headers=headers, data=payload)
 
-    base =  response.json()['establishments']
+    data =  response.json()['establishments']
+    base = []
+    for d in data:
+        base.append({
+            "CNPJ" : d.get('cnpj', None),
+            "RAZAO_SOCIAL" : d['razao_establishmentSocialReason'],
+            "ESTABELECIMENTOS" : d['establishmentName'], 
+            "ENDERECO" : d['address'], 
+            "BAIRRO" : d['district'], 
+            "CIDADE" : d['cityName'], 
+            "UF" : d['stateName'], 
+            "CEP" : d['zip'], 
+            "TELEFONE" : d['phoneAreaCode'] + " "+ d['phoneNumber'] , 
+            "EMAIL": d.get('email', None),
+            "LATITUDE" : d['latitude'], 
+            "LONGITUDE" : d['longitude'],
+            "BANDEIRA": "ALELO"
+        })
     return base
 
 def get_token():
