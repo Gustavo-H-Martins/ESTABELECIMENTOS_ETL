@@ -29,5 +29,22 @@ def get_vr(latitude:str='-19.919052', longitude:str='-43.9386685', raio:str='10'
     }
 
     response = requests.get(url, headers=headers, params=params)
-    base = response.json()
-    print(base)
+    data = response.json()['vr_estabelecimentos']
+    base = []
+    for d in data:
+        base.append({
+            "CNPJ" : d['cnpj'],
+            "RAZAO_SOCIAL" : d.get('razaoSocial', None),
+            "ESTABELECIMENTO" : d['nome'], 
+            "ENDERECO" : d['endereco'], 
+            "BAIRRO" : d['bairro'], 
+            "CIDADE" : d['cidade'], 
+            "UF" : d['estado'], 
+            "CEP" : d['cep'], 
+            "TELEFONE" : d['telefone'], 
+            "EMAIL": d.get('email', None),
+            "LATITUDE" : d['localizacao'].split(',')[0], 
+            "LONGITUDE" : d['localizacao'].split(',')[1],
+            "BANDEIRA": "VR"
+        })
+    return base
