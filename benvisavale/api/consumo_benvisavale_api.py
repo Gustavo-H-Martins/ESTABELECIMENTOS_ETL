@@ -4,7 +4,6 @@ from request_benvisavale_api import get_estabelecimentos
 import pandas as pd
 import polars as pl
 import multiprocessing
-import time
 import os
 import logging
 from datetime import datetime
@@ -63,5 +62,4 @@ def processo(municipio):
         pass
 if __name__ == '__main__':
     with multiprocessing.Pool(processes=3) as pool:
-        time.sleep(5)
         pool.map(processo, localidades)

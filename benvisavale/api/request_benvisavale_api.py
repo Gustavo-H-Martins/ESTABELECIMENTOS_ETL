@@ -1,4 +1,4 @@
-def  get_estabelecimentos(latitude:str = '-23.5673865', longitude:str = '-46.5703831821127', raio:float = 5):
+def  get_estabelecimentos(latitude:str = "-23.5673865", longitude:str = "-46.5703831821127", raio:float = 5):
     """Resumo para a função get_estabelecimentos
 
     Args:
@@ -46,18 +46,18 @@ def  get_estabelecimentos(latitude:str = '-23.5673865', longitude:str = '-46.570
     data = []
     for d in base:
         data.append({
-            'ESTABELECIMENTOS': d['nomeFantasia'],
-            'CEP': d['cep'],
-            'LOGRADOURO': d['logradouro'],
-            'NUMERO': d['numero'],
-            'BAIRRO': d['bairro'],
-            'MUNICIPIO': d['cidade'],
-            'UF': d['uf'],
-            'PAIS': d['pais'],
-            'EMAIL': d.get('email', ''),
-            'DDD': d['telefones'][0]['ddd'] if d['telefones'] else '',
-            'TELEFONE': d['telefones'][0]['telefone'] if d['telefones'] else '',
-            'LATITUDE': d['geoinfo']['lat'],
-            'LONGITUDE': d['geoinfo']['lng']
+            "CNPJ" : d.get('cnpj', None),
+            "RAZAO_SOCIAL" : d['nome'],
+            "ESTABELECIMENTOS": d["nomeFantasia"],
+            "ENDERECO": d["logradouro"] + ", " + d["numero"],
+            "BAIRRO": d["bairro"],
+            "CIDADE": d["cidade"],
+            "UF": d["uf"],
+            "CEP": d["cep"],
+            "EMAIL": d.get("email", ""),
+            "TELEFONE": d["telefones"][0]["ddd"] if d["telefones"] else "" + " " +d["telefones"][0]["telefone"] if d["telefones"] else "",
+            "LATITUDE": d["geoinfo"]["lat"],
+            "LONGITUDE": d["geoinfo"]["lng"],
+            "BANDEIRA": "BENVISAVALE"
         })
     return data
