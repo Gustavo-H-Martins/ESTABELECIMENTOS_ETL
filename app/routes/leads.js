@@ -26,18 +26,17 @@ router.route("/estabelecimentos")
     const offset = (page - 1) * pageSize;
 
     let query = `
-                  SELECT * AS TOTAL FROM tb_ticket
+                  SELECT * FROM tb_ticket
                   --
                   /**/
                   UNION ALL 
-                  SELECT * AS TOTAL FROM tb_alelo
+                  SELECT * FROM tb_alelo
                   --
                   /**/
                   UNION ALL
-                  SELECT * AS TOTAL FROM tb_vr
+                  SELECT * FROM tb_vr
                   --
                   /**/
-                  ;
                   `;
     let conditions = [];
     if (bandeira) query = `SELECT * FROM tb_${[req.query.bandeira.toLowerCase()]}`;
@@ -46,7 +45,7 @@ router.route("/estabelecimentos")
     if (cidade) conditions.push(`CIDADE = "${cidade}"`);
     if (bairro) conditions.push(`BAIRRO = "${bairro}"`);
     if (conditions.length > 0) query = query.replace(/--/g,` WHERE ${conditions.join(' AND ')}`);
-    query += ` LIMIT ? OFFSET ?`;
+    query += ` LIMIT ? OFFSET ?;`;
 
     db.all(query, [pageSize, offset], (err, rows) => {
       if (err) {
