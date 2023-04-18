@@ -42,10 +42,10 @@ def  get_estabelecimentos(latitude:str = "-23.5673865", longitude:str = "-46.570
 
     response = requests.post(url, headers=headers, json=payload)
     # Retorna um json que é aqui vou reparar e buscar somente o campo "content"
-    base = response.json()["content"]
-    data = []
-    for d in base:
-        data.append({
+    data = response.json()["content"]
+    base = []
+    for d in data:
+        base.append({
             "CNPJ" : d.get('cnpj', None),
             "RAZAO_SOCIAL" : d['nome'],
             "ESTABELECIMENTOS": d["nomeFantasia"],
@@ -60,4 +60,4 @@ def  get_estabelecimentos(latitude:str = "-23.5673865", longitude:str = "-46.570
             "LONGITUDE": d["geoinfo"]["lng"],
             "BANDEIRA": "BENVISAVALE"
         })
-    return data
+    return base
