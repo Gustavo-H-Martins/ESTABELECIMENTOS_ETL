@@ -17,7 +17,7 @@ const router = require('express').Router();
 router.route("/estabelecimentos")
   .get(function(req, res, next) {
     const clientIp = req.ip;
-    const bandeira = req.query.bandeira ? [req.query.bandeira.toUpperCase()] : `TICKET`;
+    const bandeira = req.query.bandeira ? [req.query.bandeira.toUpperCase()] : null;
     const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
     const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
     const bairro = req.query.bairro ? [req.query.bairro.toUpperCase().replace(/-/g, ' ')] : null;
@@ -25,13 +25,27 @@ router.route("/estabelecimentos")
     const pageSize = parseInt(req.query.pageSize) || 100;
     const offset = (page - 1) * pageSize;
 
-    let query = `SELECT * FROM tb_${req.query.bandeira.toLowerCase()}`;
+    let query = `
+                  SELECT * AS TOTAL FROM tb_ticket
+                  --
+                  /**/
+                  UNION ALL 
+                  SELECT * AS TOTAL FROM tb_alelo
+                  --
+                  /**/
+                  UNION ALL
+                  SELECT * AS TOTAL FROM tb_vr
+                  --
+                  /**/
+                  ;
+                  `;
     let conditions = [];
+    if (bandeira) query = `SELECT * FROM tb_${[req.query.bandeira.toLowerCase()]}`;
     if (bandeira) conditions.push(`BANDEIRA = "${bandeira}"`);
     if (uf) conditions.push(`UF = "${uf}"`);
     if (cidade) conditions.push(`CIDADE = "${cidade}"`);
     if (bairro) conditions.push(`BAIRRO = "${bairro}"`);
-    if (conditions.length > 0) query += ` WHERE ${conditions.join(' AND ')}`;
+    if (conditions.length > 0) query = query.replace(/--/g,` WHERE ${conditions.join(' AND ')}`);
     query += ` LIMIT ? OFFSET ?`;
 
     db.all(query, [pageSize, offset], (err, rows) => {
