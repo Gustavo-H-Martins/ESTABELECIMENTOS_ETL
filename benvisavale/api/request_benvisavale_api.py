@@ -55,7 +55,7 @@ def  get_estabelecimentos(latitude:str = "-23.5673865", longitude:str = "-46.570
             "UF": d["uf"],
             "CEP": d["cep"],
             "EMAIL": d.get("email", ""),
-            "TELEFONE": d["telefones"][0]["ddd"] if d["telefones"] else "" + " " +d["telefones"][0]["telefone"] if d["telefones"] else "",
+            "TELEFONE": d["telefones"][0]["ddd"]+ " " + d["telefones"][0]["telefone"] if d["telefones"] else "",
             "LATITUDE": d["geoinfo"]["lat"],
             "LONGITUDE": d["geoinfo"]["lng"],
             "BANDEIRA": "BENVISAVALE"

@@ -68,23 +68,19 @@ def  get_establishments(latitude:str = '-19.6447323', longitude:str = '-43.90449
         for hit in hits:
             source = hit["_source"]
             establishment = {
-                "ESTABELECIMENTOS": source["fantasyname"],
+                "CNPJ" : source.get('cnpj', None),
                 "RAZAO_SOCIAL": source["socialname"],
-                "TELEFONE": source["phones"],
-                "EMAIL": source["email"],
-                "SITE": source["webpage"],
-                "TIPO_LOGRADOURO": source['place'],
-                "LOGRADOURO": source["address"],
-                "NUMERO": source["number"],
-                "COMPLEMENTO": source["complement"],
+                "ESTABELECIMENTOS": source["fantasyname"],
+                "ENDERECO":  source['place'] + ' ' + source["address"] + ', ' + source["number"] + ", " + source["complement"],
                 "BAIRRO": source["town"],
-                "MUNICIPIO": source["city"],
+                "CIDADE": source["city"],
                 "UF": source["state"],
                 "CEP": source["zipcode"],
+                "EMAIL": source["email"],
+                "TELEFONE": source["phones"],
                 "LATITUDE": source['location']['lat'],
                 "LONGITUDE":source['location']['lon'],
-                "BANDEIRA": hit['_index'],
-                "LISTA_NEGRA":source['blacklist']
+                "BANDEIRA": hit['_index'].upper(),  
             }
             dados.append(establishment)
         # Retorna um json que é aqui vou reparar e buscar somente o campo "hits"

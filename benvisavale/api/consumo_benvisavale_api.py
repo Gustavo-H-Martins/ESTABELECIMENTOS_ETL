@@ -20,7 +20,7 @@ folder_dados = file_dados.replace(r'BASE_BENVISAVALE.csv', '')
 logging.basicConfig(level=logging.DEBUG, filename=file_logs,encoding='utf-8', format="%(asctime)s - %(levelname)s - %(message)s")
 
 # difinindo datazip
-datazip = datazip = f'{datetime.now().month}-{datetime.now().year}'
+datazip = datazip = f'{datetime.now().day}-{datetime.now().month}-{datetime.now().year}'
 
 # Filtra todos os arquivos csv da pasta
 arquivos_csv = list(filter(lambda x: '.csv' in x, os.listdir(folder_dados)))
@@ -61,5 +61,5 @@ def processo(municipio):
         logging.warning(f"deu erro aqui : [{e}]")
         pass
 if __name__ == '__main__':
-    with multiprocessing.Pool(processes=3) as pool:
+    with multiprocessing.Pool(processes=5) as pool:
         pool.map(processo, localidades)
