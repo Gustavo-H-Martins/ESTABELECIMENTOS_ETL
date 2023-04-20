@@ -71,7 +71,7 @@ def  get_establishments(latitude:str = '-19.6447323', longitude:str = '-43.90449
                 "CNPJ" : source.get('cnpj', None),
                 "RAZAO_SOCIAL": source["socialname"],
                 "ESTABELECIMENTOS": source["fantasyname"],
-                "ENDERECO":  source['place'] + ' ' + source["address"] + ', ' + source["number"] + ", " + source["complement"],
+                "ENDERECO":  source['place'] + ' ' + source["address"] + ' ' + source["number"] + " " + source["complement"],
                 "BAIRRO": source["town"],
                 "CIDADE": source["city"],
                 "UF": source["state"],

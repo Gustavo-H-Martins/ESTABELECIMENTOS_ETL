@@ -74,17 +74,17 @@ router.route("/estabelecimentos/counts")
     const groupby = req.query.groupby ? [req.query.groupby.toLocaleUpperCase()] : null;
 
     let query = `
-                  SELECT COUNT(*) AS TOTAL FROM tb_ticket
+                  SELECT BANDEIRA , COUNT(*) AS TOTAL FROM tb_ticket
 
                   --
                   /**/
                   UNION ALL 
-                  SELECT COUNT(*) AS TOTAL FROM tb_alelo
+                  SELECT BANDEIRA , COUNT(*) AS TOTAL FROM tb_alelo
 
                   --
                   /**/
                   UNION ALL
-                  SELECT COUNT(*) AS TOTAL FROM tb_vr
+                  SELECT BANDEIRA , COUNT(*) AS TOTA FROM tb_vr
 
                   --
                   /**/
