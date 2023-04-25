@@ -1,0 +1,51 @@
+-- TICKET COM CNPJ_RFB
+SELECT 
+    CASE WHEN rfb.CNPJ IS NULL THEN False 
+    ELSE True END AS 'CNAE_AFL',
+    t.*
+FROM tb_ticket t
+LEFT JOIN tb_rfb rfb ON rfb.CNPJ = T.CNPJ
+WHERE CNAE_AFL = False;
+
+
+-- CNPJ_RFB COM TICKET, VR, ALELO, BENVISAVALE 
+SELECT 
+    CASE WHEN t.CNPJ IS NULL THEN False 
+    ELSE True END AS 'TEM_TICKET',
+    CASE WHEN v.CNPJ IS NULL THEN False 
+    ELSE True END AS 'TEM_VR',
+    CASE WHEN a.RAZAO_SOCIAL IS NULL THEN False 
+    ELSE True END AS 'TEM_ALELO',
+    CASE WHEN b.RAZAO_SOCIAL IS NULL THEN False 
+    ELSE True END AS 'TEM_BENVISAVALE',
+    rfb.CNPJ,
+    rfb.RAZAO_SOCIAL,
+    rfb.NOME_FANTASIA,
+    rfb.ENDERECO,
+    rfb.BAIRRO,
+    rfb.CIDADE,
+    rfb.UF,
+    rfb.TELEFONE
+FROM tb_rfb rfb
+LEFT JOIN tb_ticket t ON t.CNPJ = rfb.CNPJ
+LEFT JOIN tb_vr v ON v.CNPJ = rfb.cnpj
+LEFT JOIN tb_alelo a ON a.RAZAO_SOCIAL = rfb.RAZAO_SOCIAL
+LEFT JOIN tb_benvisavale b ON b.RAZAO_SOCIAL = rfb.RAZAO_SOCIAL
+WHERE TEM_TICKET = True;
+
+
+-- VR COM CNPJ_RFB
+SELECT 
+    CASE WHEN v.CNPJ IS NULL THEN False 
+    ELSE True END AS 'TEM_VR',
+    rfb.*
+FROM tb_rfb rfb
+LEFT JOIN tb_vr v ON v.CNPJ = rfb.CNPJ;
+
+
+
+-- COMPARATIVO POR CNPJ E TABELAS
+SELECT * FROM tb_rfb
+WHERE CNPJ = '30060978000533';
+
+11533746
