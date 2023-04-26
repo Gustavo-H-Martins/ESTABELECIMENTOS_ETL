@@ -1,0 +1,46 @@
+/*CNPJ_RFB COM TICKET*/
+SELECT 
+    rfb.CNPJ AS CNPJ,
+    rfb.RAZAO_SOCIAL AS RAZAO_SOCIAL_RFB,
+    rfb.NOME_FANTASIA AS NOME_FANTASIA_RFB,
+    s.NOME_FANTASIA AS NOME_FANTASIA_SIGA,
+    t.ESTABELECIMENTOS as ESTABELECIMENTOS_TICKET,
+    rfb.ENDERECO AS ENDERECO_RFB,
+    s.ENDERECO AS ENDERECO_SIGA,
+    rfb.BAIRRO AS BAIRRO,
+    rfb.CIDADE AS CIDADE,
+    rfb.UF AS UF,
+    t.TELEFONE AS TELEFONE_TICKET,
+    substr(replace(rfb.TELEFONE, '+', ' '), 4, 2) || ' ' || substr(replace(rfb.TELEFONE, '+', ' '), 6, 4) || '-' || substr(replace(rfb.TELEFONE, '+', ' '), 10) AS TELEFONE_RFB,
+    rfb.EMAIL AS EMAIL_RFB,
+        CASE 
+            WHEN t.CNPJ IS NULL THEN False 
+            ELSE True
+        END AS TEM_TICKET,
+        CASE 
+            WHEN s.CNPJ IS NULL THEN False 
+            ELSE True 
+        END AS BASE_SIGA,
+        CASE 
+            WHEN s.ASSOCIADO IS NULL THEN False
+            WHEN s.ASSOCIADO IS 'ATIVO' THEN 'ATIVO'
+            WHEN s.ASSOCIADO IS 'INATIVO' THEN 'INATIVO'
+        END AS ASSOCIADO,
+        CASE
+            WHEN s.SOU_ABRASEL IS NULL THEN False
+            WHEN s.SOU_ABRASEL IS 'ATIVO' THEN 'ATIVO'
+            WHEN s.SOU_ABRASEL IS 'INATIVO' THEN 'INATIVO'
+            WHEN s.SOU_ABRASEL IS 'DESCOMISSIONADO' THEN 'DESCOMISSIONADO'
+        END AS SOU_ABRASEL,
+        m.LATITUDE AS LATITUDE,
+        m.LONGITUDE AS LONGITUDE
+FROM tb_rfb rfb
+LEFT JOIN tb_ticket t ON t.CNPJ = rfb.CNPJ
+LEFT JOIN tb_siga s ON s.CNPJ = rfb.CNPJ
+LEFT JOIN tb_municipios m ON m.BAIRRO = rfb.BAIRRO AND m.CIDADE = rfb.CIDADE AND m.UF = rfb.UF
+WHERE rfb.UF = 'SP';
+--WHERE (ACOS(SIN(RADIANS('-23.54786')) * SIN(RADIANS(m.LATITUDE)) + COS(RADIANS('-23.54786')) * COS(RADIANS(m.LATITUDE)) * COS(RADIANS(m.LONGITUDE) - RADIANS('-46.69947'))) * 6371) <= 10;
+
+
+SELECT UF, COUNT(*) FROM tb_rfb 
+GROUP BY UF;

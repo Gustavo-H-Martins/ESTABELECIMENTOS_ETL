@@ -24,26 +24,58 @@ router.route("/estabelecimentos")
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 100;
     const offset = (page - 1) * pageSize;
-
+    const raio =  parseFloat(req.query.raio) || 10;
+    const lat = parseFloat(req.query.lat) || 0
+    const lon = parseFloat(req.query.lon) || 0
     let query = `
-                  SELECT * FROM tb_ticket
-                  --
-                  /**/
-                  UNION ALL 
-                  SELECT * FROM tb_alelo
-                  --
-                  /**/
-                  UNION ALL
-                  SELECT * FROM tb_vr
-                  --
-                  /**/
+                /*CNPJ_RFB COM TICKET*/
+                SELECT 
+                    rfb.CNPJ AS CNPJ,
+                    rfb.RAZAO_SOCIAL AS RAZAO_SOCIAL_RFB,
+                    rfb.NOME_FANTASIA AS NOME_FANTASIA_RFB,
+                    s.NOME_FANTASIA AS NOME_FANTASIA_SIGA,
+                    t.ESTABELECIMENTOS as ESTABELECIMENTOS_TICKET,
+                    rfb.ENDERECO AS ENDERECO_RFB,
+                    s.ENDERECO AS ENDERECO_SIGA,
+                    rfb.BAIRRO AS BAIRRO,
+                    rfb.CIDADE AS CIDADE,
+                    rfb.UF AS UF,
+                    t.TELEFONE AS TELEFONE_TICKET,
+                    substr(replace(rfb.TELEFONE, '+', ' '), 4, 2) || ' ' || substr(replace(rfb.TELEFONE, '+', ' '), 6, 4) || '-' || substr(replace(rfb.TELEFONE, '+', ' '), 10) AS TELEFONE_RFB,
+                    rfb.EMAIL,
+                        CASE 
+                            WHEN t.CNPJ IS NULL THEN False 
+                            ELSE True
+                        END AS TEM_TICKET,
+                        CASE 
+                            WHEN s.CNPJ IS NULL THEN False 
+                            ELSE True 
+                        END AS BASE_SIGA,
+                        CASE 
+                            WHEN s.ASSOCIADO IS NULL THEN False
+                            WHEN s.ASSOCIADO IS 'ATIVO' THEN 'ATIVO'
+                            WHEN s.ASSOCIADO IS 'INATIVO' THEN 'INATIVO'
+                        END AS ASSOCIADO,
+                        CASE
+                            WHEN s.SOU_ABRASEL IS NULL THEN False
+                            WHEN s.SOU_ABRASEL IS 'ATIVO' THEN 'ATIVO'
+                            WHEN s.SOU_ABRASEL IS 'INATIVO' THEN 'INATIVO'
+                            WHEN s.SOU_ABRASEL IS 'DESCOMISSIONADO' THEN 'DESCOMISSIONADO'
+                        END AS SOU_ABRASEL,
+                        m.LATITUDE AS LATITUDE,
+                        m.LONGITUDE AS LONGITUDE
+                FROM tb_rfb rfb
+                LEFT JOIN tb_ticket t ON t.CNPJ = rfb.CNPJ
+                LEFT JOIN tb_siga s ON s.CNPJ = rfb.CNPJ
+                LEFT JOIN tb_municipios m ON m.BAIRRO = rfb.BAIRRO AND m.CIDADE = rfb.CIDADE AND m.UF = rfb.UF
+                --
+                /**/
                   `;
     let conditions = [];
-    if (bandeira) query = `SELECT * FROM tb_${[req.query.bandeira.toLowerCase()]}`;
-    if (bandeira) conditions.push(`BANDEIRA = "${bandeira}"`);
-    if (uf) conditions.push(`UF = "${uf}"`);
-    if (cidade) conditions.push(`CIDADE = "${cidade}"`);
-    if (bairro) conditions.push(`BAIRRO = "${bairro}"`);
+    if(lat !== 0 && lon !== 0) conditions.push(` (ACOS(SIN(RADIANS('${lat}')) * SIN(RADIANS(m.LATITUDE)) + COS(RADIANS('${lat}')) * COS(RADIANS(m.LATITUDE)) * COS(RADIANS(m.LONGITUDE) - RADIANS('${lon}'))) * 6371) <= ${raio}`)
+    if (uf) conditions.push(`rfb.UF = "${uf}"`);
+    if (cidade) conditions.push(`rfb.CIDADE = "${cidade}"`);
+    if (bairro) conditions.push(`rfb.BAIRRO = "${bairro}"`);
     if (conditions.length > 0) query = query.replace(/--/g,` WHERE ${conditions.join(' AND ')}`);
     query += ` LIMIT ? OFFSET ?;`;
 
@@ -74,32 +106,26 @@ router.route("/estabelecimentos/counts")
     const groupby = req.query.groupby ? [req.query.groupby.toLocaleUpperCase()] : null;
 
     let query = `
-                  SELECT BANDEIRA , COUNT(*) AS TOTAL FROM tb_ticket
-
-                  --
-                  /**/
-                  UNION ALL 
-                  SELECT BANDEIRA , COUNT(*) AS TOTAL FROM tb_alelo
-
-                  --
-                  /**/
-                  UNION ALL
-                  SELECT BANDEIRA , COUNT(*) AS TOTA FROM tb_vr
-
+                  /*TICKET COM CNPJ_RFB*/
+                  SELECT 
+                      CASE WHEN rfb.CNPJ IS NULL THEN False 
+                      ELSE True END AS 'CNAE_AFL',
+                      COUNT(*) AS TOTAL
+                  FROM tb_ticket t
+                  LEFT JOIN tb_rfb rfb ON rfb.CNPJ = t.CNPJ
                   --
                   /**/
                   ;
                   `;
     let conditions = [];
-    if (bandeira) query = `SELECT COUNT(*) AS TOTAL FROM tb_${[req.query.bandeira.toLowerCase()]}`
-    if (bandeira) conditions.push(`BANDEIRA = "${bandeira}"`);
-    if (uf) conditions.push(`UF = "${uf}"`);
-    if (cidade) conditions.push(`CIDADE = "${cidade}"`);
-    if (bairro) conditions.push(`BAIRRO = "${bairro}"`);
+    if (bandeira) conditions.push(`t.BANDEIRA = "${bandeira}"`);
+    if (uf) conditions.push(`rfb.UF = "${uf}"`);
+    if (cidade) conditions.push(`rfb.CIDADE = "${cidade}"`);
+    if (bairro) conditions.push(`rfb.BAIRRO = "${bairro}"`);
     if (conditions.length > 0) query = query.replace(/--/g,` WHERE ${conditions.join(' AND ')}`);
-    if (groupby) query = query.replace(/\/\*\*\//g, ` GROUP BY ${groupby}`);
-    if (groupby) query = query.replace(/COUNT\(\*\)/g, `${groupby}, COUNT(*)`)
-    //console.log(query) /COUNT\(\*\)/g
+    if (groupby) query = query.replace(/\/\*\*\//g, ` GROUP BY t.${groupby}`);
+    if (groupby) query = query.replace(/COUNT\(\*\)/g, `t.${groupby}, COUNT(*)`)
+    console.log(query)
 
     db.all(query, (err, rows) => {
       if (err) {
@@ -127,12 +153,6 @@ router.route('/estabelecimentos/bairros')
     const bairro = req.query.bairro ? [req.query.bairro.toUpperCase().replace(/-/g, ' ')] : null;
 
     let query = `SELECT DISTINCT(BAIRRO) FROM tb_ticket
-                --
-                UNION ALL 
-                SELECT DISTINCT(BAIRRO) FROM tb_alelo
-                --
-                UNION ALL
-                SELECT DISTINCT(BAIRRO) FROM tb_vr
                 --
                 ;`;
     let conditions = [];
@@ -170,12 +190,6 @@ router.route('/estabelecimentos/bairros')
     const bairro = req.query.bairro ? [req.query.bairro.toUpperCase().replace(/-/g, ' ')] : null;
 
     let query = `SELECT DISTINCT(CIDADE) FROM tb_ticket
-                --
-                UNION ALL 
-                SELECT DISTINCT(CIDADE) FROM tb_alelo
-                --
-                UNION ALL
-                SELECT DISTINCT(CIDADE) FROM tb_vr
                 --
                 ;`;
     let conditions = [];
