@@ -125,7 +125,7 @@ router.route("/estabelecimentos/counts")
     if (conditions.length > 0) query = query.replace(/--/g,` WHERE ${conditions.join(' AND ')}`);
     if (groupby) query = query.replace(/\/\*\*\//g, ` GROUP BY t.${groupby}`);
     if (groupby) query = query.replace(/COUNT\(\*\)/g, `t.${groupby}, COUNT(*)`)
-    console.log(query)
+    //console.log(query)
 
     db.all(query, (err, rows) => {
       if (err) {
