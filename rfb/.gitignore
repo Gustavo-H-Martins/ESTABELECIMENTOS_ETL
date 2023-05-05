@@ -1,0 +1,6 @@
+# Por favor GitIgnore, ignore os arquivos...
+# Na camada RAW pois são muito pessados, tudo bem ?
+RAW/*
+
+# de Logs também porque revela informações da minha máquina e isso não é legal.
+logs/*
