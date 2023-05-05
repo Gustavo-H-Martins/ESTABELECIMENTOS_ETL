@@ -16,3 +16,6 @@
 
     print(current_job)
 ```
+
+### Download Docker Desktop Windows
+`https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe`

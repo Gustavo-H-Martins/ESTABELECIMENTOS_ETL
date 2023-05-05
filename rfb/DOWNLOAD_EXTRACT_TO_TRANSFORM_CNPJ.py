@@ -19,14 +19,27 @@ warnings.filterwarnings("ignore")
 
 
 class EXTRATOR_CNPJ:
+    f"""
+        argumentos:
+            baixar_e_extrair (bool): define o que a quais ações vamos realizar, em relação a extrair e ler os dados, ou somente ler os dados já existentes,
+            se os dados não existirem e colocar para ler ele vai baixar tudo antes de ler :
+            {os.linesep}[True] para extrair e ler 
+            {os.linesep}[False] para somente ler.
+            url (str, opcional): "https://dadosabertos.rfb.gov.br/CNPJ/".
+            nome_arquivo (str, opcional): informe o nome do arquivo na página da RFB que você quer buscar, padrão vazio.
+            extensao (str, opcional): informe a extensão do arquivo que quer buscar, tem um pdf na fonte, o padrão é "zip".
+        """
     def __init__(
         self,
+        baixar_e_extrair:bool = True,
         url: str = "https://dadosabertos.rfb.gov.br/CNPJ/",
-        nome_arquivo: str = "",
+        nome_arquivo: str = None,
         extensao: str = "zip",
     ):
+        
+        self.baixar_e_extrair = baixar_e_extrair
         self.url = url
-        self.nome_arquivo = nome_arquivo
+        self.nome_arquivo = nome_arquivo.capitalize()
         self.extensao = extensao
         self.CNPJ_ESQUEMA = {
             "EMPRESAS": {
@@ -160,8 +173,6 @@ class EXTRATOR_CNPJ:
         from pyspark.sql import SparkSession
         from pyspark.sql.functions import input_file_name, lit
 
-        urls = self.request()
-
         # Define ou busca uma sessão do Spark
         spark = (
             SparkSession.builder.master("local[2]")
@@ -169,44 +180,62 @@ class EXTRATOR_CNPJ:
             .getOrCreate()
         )
         spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
-        for url in urls:
-            # numero_arquivo = urls.index(url)
-            # Diretório de execução do script
-            current_dir = os.path.dirname(os.path.abspath(__file__))
+        if self.baixar_e_extrair != False:
+            # ativa o método request
+            urls = self.request()
+            for url in urls:
+                # numero_arquivo = urls.index(url)
 
-            # Pega o nome do arquivo pela url
-            nome_arquivo_download = url.split("/")[-1]
+                # Pega o nome do arquivo pela url
+                nome_arquivo_download = url.split("/")[-1]
 
-            # Define o caminho absoluto do diretório.
-            salvar_onde = f"{current_dir}/RAW/{''.join(filter(str.isalpha,nome_arquivo_download.split('.')[0]))}/"
-            logging.info(f"Os arquivos serão salvos no diretório: {salvar_onde}")
-            # cria a pasta para armazenar o arquivo, se ela não existir
-            if not os.path.exists(salvar_onde):
-                os.makedirs(salvar_onde)
+                # Define o caminho absoluto do diretório.
+                salvar_onde = f"{current_dir}/RAW/{''.join(filter(str.isalpha,nome_arquivo_download.split('.')[0]))}/"
+                logging.info(f"Os arquivos serão salvos no diretório: {salvar_onde}")
+                # cria a pasta para armazenar o arquivo, se ela não existir
+                if not os.path.exists(salvar_onde):
+                    os.makedirs(salvar_onde)
 
-            # download do arquivo zip
-            path = self.download(url, os.path.join(salvar_onde, nome_arquivo_download))
+                # download do arquivo zip
+                path = self.download(url, os.path.join(salvar_onde, nome_arquivo_download))
 
-            # descompactação do arquivo zip
-            with zipfile.ZipFile(path, "r") as zip_ref:
-                # obtem o nome do primeiro arquivo dentro do zip
-                nome_original_arquivo_zip = zip_ref.namelist()[0]
+                # descompactação do arquivo zip
+                with zipfile.ZipFile(path, "r") as zip_ref:
+                    # obtem o nome do primeiro arquivo dentro do zip
+                    nome_original_arquivo_zip = zip_ref.namelist()[0]
 
-                # define um novo nome para o arquivo
-                novo_nome_arquivo = f"CNPJ_{nome_arquivo_download.split('.')[0]}.csv"
-                # cria um dicionário com as informações de origem e destino
-                arquivos_para_extrair = {nome_original_arquivo_zip: novo_nome_arquivo}
+                    # define um novo nome para o arquivo
+                    novo_nome_arquivo = f"CNPJ_{nome_arquivo_download.split('.')[0]}.csv"
+                    # cria um dicionário com as informações de origem e destino
+                    arquivos_para_extrair = {nome_original_arquivo_zip: novo_nome_arquivo}
 
-                # realiza a extração do arquivo zip
-                zip_ref.extractall(path=f"{salvar_onde}", members=arquivos_para_extrair)
+                    # realiza a extração do arquivo zip
+                    zip_ref.extractall(path=f"{salvar_onde}", members=arquivos_para_extrair)
 
-                # renomeia o arquivo extraído com o novo nome
-                os.replace(
-                    os.path.join(salvar_onde, nome_original_arquivo_zip),
-                    os.path.join(salvar_onde, novo_nome_arquivo),
-                )
-            logging.info(f"Deletando o arquivo baixado {nome_arquivo_download}")
-            os.remove(path)
+                    # renomeia o arquivo extraído com o novo nome
+                    os.replace(
+                        os.path.join(salvar_onde, nome_original_arquivo_zip),
+                        os.path.join(salvar_onde, novo_nome_arquivo),
+                    )
+                logging.info(f"Deletando o arquivo baixado {nome_arquivo_download}")
+                os.remove(path)
+        else:
+            if self.nome_arquivo is None:
+                self.nome_arquivo = str(input(f"""Se você não quer baixar os arquivos, preciso que me informe o nome para os arquivos que vou ler né amigão!
+                {os.linesep} [SIMPLES]
+                {os.linesep} [ESTABELECIMENTOS]
+                {os.linesep} [SOCIOS]
+                {os.linesep} [CNAES]
+                {os.linesep} [MUNICIPIOS]
+                {os.linesep} [EMPRESAS]
+                {os.linesep} [MOTIVOS]
+                {os.linesep} [NATUREZAS]
+                {os.linesep} [PAISES]
+                {os.linesep} [QUALIFICACOES]
+                {os.linesep} informe o nome com todas as letras.""")).upper()
+                # Define o caminho absoluto do diretório.
+            salvar_onde = f"{current_dir}/RAW/{self.nome_arquivo}/"
+        
         # leitura do arquivo CSV em um dataframe Spark
         # Obtém a lista de arquivos no diretório
         lista_arquivos_no_diretorio = [
@@ -216,14 +245,17 @@ class EXTRATOR_CNPJ:
         ]
         # Lê o arquivo CSV em um dataframe Spark e adiciona uma coluna com o nome do arquivo
         if len(lista_arquivos_no_diretorio) == 1:
+            arquivo_no_diretorio = lista_arquivos_no_diretorio[0]
             dados = (
                 spark.read.format("csv")
                 .option("header", "false")
                 .option("delimiter", ";")
                 .option("inferSchema", "true")
-                .load(lista_arquivos_no_diretorio[0])
+                .load(arquivo_no_diretorio)
             )
-            dados.withColumn("NOME_ARQUIVO", lit(lista_arquivos_no_diretorio[0]))
+            nome_arquivo = arquivo_no_diretorio.split("\\")[-1]
+            dados.withColumn("NOME_ARQUIVO", lit(nome_arquivo))
+
         # Lê cada arquivo CSV em um dataframe Spark e adiciona uma coluna com o nome do arquivo
         else:
             dados = None
@@ -236,8 +268,9 @@ class EXTRATOR_CNPJ:
                         .option("inferSchema", "true")
                         .load(arquivo_no_diretorio)
                     )
+                    nome_arquivo = arquivo_no_diretorio.split("\\")[-1]
                     dados = dados.withColumn(
-                        "NOME_ARQUIVO", lit(arquivo_no_diretorio.split("\\")[-1])
+                        "NOME_ARQUIVO", lit(nome_arquivo)
                     )
                 else:
                     # print(arquivo_no_diretorio)
@@ -248,14 +281,17 @@ class EXTRATOR_CNPJ:
                         .option("inferSchema", "true")
                         .load(arquivo_no_diretorio)
                     )
+                    nome_arquivo = arquivo_no_diretorio.split("\\")[-1]
                     dados_incrementados = dados_incrementados.withColumn(
-                        "NOME_ARQUIVO", lit(arquivo_no_diretorio.split("\\")[-1])
+                        "NOME_ARQUIVO", lit(nome_arquivo)
                     )
                     dados = dados.union(dados_incrementados)
         # USA O MÉTODO WITHCOLUMNRENAMED() PARA RENOMEAR AS COLUNAS
+        V_ESQUEMA = arquivo_no_diretorio.replace(f"{salvar_onde}CNPJ_", "")
+        # MODIFICA O ESQUEMA
         for NOME_ANTIGO, NOVO_NOME in self.CNPJ_ESQUEMA[
-            "".join(filter(str.isalpha, nome_arquivo_download.split(".")[0]))
+            "".join(filter(str.isalpha, V_ESQUEMA.split(".")[0]))
         ].items():
             dados = dados.withColumnRenamed(NOME_ANTIGO, NOVO_NOME)
         logging.info(f"Estrutura do DataFrame: {dados.show(1, vertical=True)}")
-        return dados
+        return dados, spark
