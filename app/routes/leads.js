@@ -216,9 +216,9 @@ router.route("/estabelecimentos_rfb/counts")
                   `;
     let conditions = [];
     if (bandeira) conditions.push(`t.BANDEIRA = "${bandeira}"`);
-    if (uf) conditions.push(`rfb.UF = "${uf}"`);
-    if (cidade) conditions.push(`rfb.CIDADE = "${cidade}"`);
-    if (bairro) conditions.push(`rfb.BAIRRO = "${bairro}"`);
+    if (uf) conditions.push(`t.UF = "${uf}"`);
+    if (cidade) conditions.push(`t.CIDADE = "${cidade}"`);
+    if (bairro) conditions.push(`t.BAIRRO = "${bairro}"`);
     if (conditions.length > 0) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
     if (groupby) query = query.replace(/\/\*\*\//g, ` GROUP BY t.${groupby}`);
     if (groupby) query = query.replace(/COUNT\(\*\)/g, `t.${groupby}, COUNT(*)`);
