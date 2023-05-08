@@ -4,3 +4,4 @@
 # ignore os pycache também fiotin?
 *.pyc 
 
+*.env

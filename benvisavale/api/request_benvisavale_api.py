@@ -1,3 +1,11 @@
+import os
+from dotenv import load_dotenv
+
+# carrega as variáveis de ambientes no script
+load_dotenv(".env")
+
+# carrega a variável de ambiente no script
+CODE_BENVISAVALE = os.getenv('CODE_BENVISAVALE')
 def  get_estabelecimentos(latitude:str = "-23.5673865", longitude:str = "-46.5703831821127", raio:float = 5):
     """Resumo para a função get_estabelecimentos
 
@@ -9,7 +17,7 @@ def  get_estabelecimentos(latitude:str = "-23.5673865", longitude:str = "-46.570
     # libs utilizadas
     import requests
     import pandas as pd
-    url = "https://ben-institucional-prd.azurewebsites.net/api/request?code=MqRNZcyopVyFNtUQ1BWNxnIHAiQDXRSnUC4k9xKNuDs7vabqkKi3eQ=="
+    url = f"https://ben-institucional-prd.azurewebsites.net/api/request?code={CODE_BENVISAVALE}"
 
     payload = {
         "resourcePath": "estabelecimentos",
