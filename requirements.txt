@@ -201,7 +201,6 @@ py4j==0.10.9.5
 Pygments==2.14.0
 PyJWT==2.6.0
 PySocks==1.7.1
-pyspark==3.3.2
 python-daemon==2.3.2
 python-dotenv==0.21.1
 python-nvd3==0.15.0
