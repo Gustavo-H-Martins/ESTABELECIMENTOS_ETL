@@ -168,15 +168,18 @@ class EXTRATOR_CNPJ:
         return destino
 
     def run(self):
+        import pyspark
         import re
         import zipfile
         from pyspark.sql import SparkSession
         from pyspark.sql.functions import input_file_name, lit
-
+        import pandas as pd
         # Define ou busca uma sessão do Spark
         spark = (
             SparkSession.builder.master("local[2]")
             .appName("OnlineReader")
+            .config("spark.driver.memory", "3g")
+            .config("spark.driver.maxResultSize", "3g")
             .getOrCreate()
         )
         spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
