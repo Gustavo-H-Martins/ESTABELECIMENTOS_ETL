@@ -296,5 +296,5 @@ class EXTRATOR_CNPJ:
             "".join(filter(str.isalpha, V_ESQUEMA.split(".")[0]))
         ].items():
             dados = dados.withColumnRenamed(NOME_ANTIGO, NOVO_NOME)
-        logging.info(f"TOTAL DADOS RETORNADOS: {dados.count()}")
+        #logging.info(f"TOTAL DADOS RETORNADOS: {dados.count()}")
         return dados, spark
