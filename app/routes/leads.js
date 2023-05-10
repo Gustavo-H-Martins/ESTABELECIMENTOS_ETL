@@ -82,18 +82,25 @@ router.route("/estabelecimentos_rfb")
                     s.NOME_FANTASIA AS NOME_FANTASIA_SIGA,
                     t.ESTABELECIMENTOS as ESTABELECIMENTOS_TICKET,
                     rfb.ENDERECO AS ENDERECO_RFB,
+                    rfb.CEP AS CEP,
                     s.ENDERECO AS ENDERECO_SIGA,
                     t.ENDERECO AS ENDERECO_TICKET,
-                    t.BAIRRO AS BAIRRO,
-                    t.CIDADE AS CIDADE,
-                    t.UF AS UF,
+                    a.ENDERECO AS ENDERECO_ALELO,
+                    rfb.BAIRRO AS BAIRRO,
+                    rfb.CIDADE AS CIDADE,
+                    rfb.UF AS UF,
                     t.TELEFONE AS TELEFONE_TICKET,
-                    substr(replace(rfb.TELEFONE, '+', ' '), 4, 2) || ' ' || substr(replace(rfb.TELEFONE, '+', ' '), 6, 4) || '-' || substr(replace(rfb.TELEFONE, '+', ' '), 10) AS TELEFONE_RFB,
+                    a.TELEFONE AS TELEFONE_ALELO,
+                    rfb.TELEFONE AS TELEFONE_RFB,
                     rfb.EMAIL,
                         CASE 
                             WHEN t.CNPJ IS NULL THEN False 
                             ELSE True
                         END AS TEM_TICKET,
+                        CASE 
+                            WHEN a.RAZAO_SOCIAL IS NULL THEN False 
+                            ELSE True
+                        END AS TEM_ALELO,
                         CASE 
                             WHEN s.CNPJ IS NULL THEN False 
                             ELSE True 
@@ -109,10 +116,12 @@ router.route("/estabelecimentos_rfb")
                             WHEN s.SOU_ABRASEL = 'INATIVO' THEN 'INATIVO'
                             WHEN s.SOU_ABRASEL = 'DESCOMISSIONADO' THEN 'DESCOMISSIONADO'
                         END AS SOU_ABRASEL,
-                        t.LATITUDE,
-                        t.LONGITUDE
+                        m.LATITUDE,
+                        m.LONGITUDE
                 FROM tb_rfb rfb
-                RIGHT JOIN tb_ticket t ON t.CNPJ = rfb.CNPJ
+                LEFT JOIN tb_ticket t ON t.CNPJ = rfb.CNPJ
+                LEFT JOIN tb_alelo a ON a.RAZAO_SOCIAL = rfb.RAZAO_SOCIAL
+                LEFT JOIN tb_municipios m ON m.BAIRRO = rfb.BAIRRO AND m.UF = rfb.UF
                 LEFT JOIN tb_siga s ON s.CNPJ = rfb.CNPJ
                 --
                 /**/
@@ -123,11 +132,11 @@ router.route("/estabelecimentos_rfb")
     if (tembandeira) conditions.push(`TEM_${tembandeira} = 1`);
     if (associados) conditions.push(`ASSOCIADO = "${associados}"`);
     if (souabrasel) conditions.push(`SOU_ABRASEL = "${souabrasel}"`)
-    if (uf) conditions.push(`t.UF = "${uf}"`);
-    if (cidade) conditions.push(`t.CIDADE = "${cidade}"`);
-    if (bairro) conditions.push(`t.BAIRRO = "${bairro}"`);
+    if (uf) conditions.push(`rfb.UF = "${uf}"`);
+    if (cidade) conditions.push(`rfb.CIDADE = "${cidade}"`);
+    if (bairro) conditions.push(`rfb.BAIRRO = "${bairro}"`);
     if (conditions.length > 0) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
-    query += ` LIMIT ? OFFSET ?;`;
+    query += `LIMIT ? OFFSET ?;`;
 
     db.all(query, [pageSize, offset], (err, rows) => {
       if (err) {
@@ -197,25 +206,30 @@ router.route("/estabelecimentos_rfb/counts")
   .get(function(req, res, next) {
     const clientIp = req.ip;
     const bandeira = req.query.bandeira ? [req.query.bandeira.toUpperCase()] : null;
+    const associados = req.query.associados ? [req.query.associados.toUpperCase()] : null;
+    const souabrasel = req.query.souabrasel ? [req.query.souabrasel.toUpperCase()] : null;
     const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
     const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
     const bairro = req.query.bairro ? [req.query.bairro.toUpperCase().replace(/-/g, ' ')] : null;
     const groupby = req.query.groupby ? [req.query.groupby.toLocaleUpperCase()] : null;
     const orderby = req.query.orderby ? [req.query.orderby.toLocaleUpperCase()] : null;
     let query = `
-                  /*TICKET COM CNPJ_RFB*/
-                  SELECT 
-                      CASE WHEN rfb.CNPJ IS NULL THEN False 
-                      ELSE True END AS 'CNAE_AFL',
-                      COUNT(*) AS TOTAL
-                  FROM tb_ticket t
-                  LEFT JOIN tb_rfb rfb ON rfb.CNPJ = t.CNPJ
-                  --
-                  /**/
-                  ;
-                  `;
+                /*TICKET COM CNPJ_RFB E SIGA*/
+                SELECT 
+                    CASE WHEN rfb.CNPJ IS NULL THEN False 
+                    ELSE True END AS 'CNAE_AFL',
+                    COUNT(*) AS TOTAL
+                FROM tb_ticket t
+                LEFT JOIN tb_rfb rfb  ON t.CNPJ = rfb.CNPJ
+                LEFT JOIN tb_siga s ON s.CNPJ  = rfb.CNPJ
+                --
+                /**/
+                ;
+                `;
     let conditions = [];
     if (bandeira) conditions.push(`t.BANDEIRA = "${bandeira}"`);
+    if (associados) conditions.push(`s.ASSOCIADO = "${associados}"`);
+    if (souabrasel) conditions.push(`s.SOU_ABRASEL = "${souabrasel}"`)
     if (uf) conditions.push(`t.UF = "${uf}"`);
     if (cidade) conditions.push(`t.CIDADE = "${cidade}"`);
     if (bairro) conditions.push(`t.BAIRRO = "${bairro}"`);

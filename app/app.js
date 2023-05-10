@@ -22,7 +22,11 @@ const leadsRouter = require('./routes/leads');
 // coleta o ip do cliente
 app.use((req, _res, next) => {
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    console.log(`IP do cliente: ${ip}`);
+    const date = new Date()
+    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // formata a data como DD/MM/AAAA
+    const formattedTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`; // formata a hora como HH:MM:SS
+    dataChamada = `Data: ${formattedDate} - Hora: ${formattedTime}`
+    console.log(`IP do cliente: ${ip} Em ${dataChamada}`);
     next();
   });
 // analisa solicitações recebidas com cargas JSON 
