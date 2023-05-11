@@ -127,7 +127,7 @@ router.route("/estabelecimentos_rfb")
                 /**/
                   `;
     let conditions = [];
-    if (lat !== 0 && lon !== 0) conditions.push(` (ACOS(SIN(RADIANS('${lat}')) * SIN(RADIANS(m.LATITUDE)) + COS(RADIANS('${lat}')) * COS(RADIANS(m.LATITUDE)) * COS(RADIANS(m.LONGITUDE) - RADIANS('${lon}'))) * 6371) <= ${raio}`);
+    if (lat !== 0 && lon !== 0) conditions.push(` (ACOS(SIN(RADIANS('${lat}')) * SIN(RADIANS(LATITUDES)) + COS(RADIANS('${lat}')) * COS(RADIANS(LATITUDES)) * COS(RADIANS(LONGITUDES) - RADIANS('${lon}'))) * 6371) <= ${raio}`);
     if (bandeira) conditions.push(`${bandeira[0].toLowerCase()}.bandeira = ${bandeira}`);
     if (tembandeira) conditions.push(`TEM_${tembandeira} = 1`);
     if (associados) conditions.push(`ASSOCIADO = "${associados}"`);
