@@ -25,7 +25,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         T.BAIRRO AS BAIRRO,
         T.CIDADE AS CIDADE,
         T.UF AS UF,
-        T.TELEFONE AS TELEFONE_TICKET,
+        T.TELEFONE AS TELEFONE,
         RFB.TELEFONE AS TELEFONE_RFB,
         RFB.EMAIL,
         T.BANDEIRA || COALESCE(", " || V.BANDEIRA, ' ') 
@@ -89,7 +89,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         A.BAIRRO AS BAIRRO,
         A.CIDADE AS CIDADE,
         A.UF AS UF,
-        A.TELEFONE AS TELEFONE_TICKET,
+        A.TELEFONE AS TELEFONE,
         RFB.TELEFONE AS TELEFONE_RFB,
         RFB.EMAIL,
         A.BANDEIRA || COALESCE(", " || V.BANDEIRA, ' ') 
@@ -153,7 +153,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         V.BAIRRO AS BAIRRO,
         V.CIDADE AS CIDADE,
         V.UF AS UF,
-        V.TELEFONE AS TELEFONE_TICKET,
+        V.TELEFONE AS TELEFONE,
         RFB.TELEFONE AS TELEFONE_RFB,
         RFB.EMAIL,
         V.BANDEIRA || COALESCE(", " || T.BANDEIRA, ' ') 
@@ -217,7 +217,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         SO.BAIRRO AS BAIRRO,
         SO.CIDADE AS CIDADE,
         SO.UF AS UF,
-        SO.TELEFONE AS TELEFONE_TICKET,
+        SO.TELEFONE AS TELEFONE,
         RFB.TELEFONE AS TELEFONE_RFB,
         RFB.EMAIL,
         SO.BANDEIRA || COALESCE(", " || T.BANDEIRA, ' ') 
@@ -281,7 +281,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         B.BAIRRO AS BAIRRO,
         B.CIDADE AS CIDADE,
         B.UF AS UF,
-        B.TELEFONE AS TELEFONE_TICKET,
+        B.TELEFONE AS TELEFONE,
         RFB.TELEFONE AS TELEFONE_RFB,
         RFB.EMAIL,
         B.BANDEIRA || COALESCE(", " || T.BANDEIRA, ' ') 
