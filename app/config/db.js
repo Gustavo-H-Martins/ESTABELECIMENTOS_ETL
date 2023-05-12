@@ -14,6 +14,11 @@ const db = new sqlite3.Database(dbFile, (err) => {
       console.error(err.message);
     }
     console.log('conectado no banco de dados.');
+    db.run(`CREATE TABLE IF NOT EXISTS tb_usuario 
+    (
+      username TEXT NOT NULL, 
+      password TEXT NOT NULL,
+      secretKey TEXT NOT NULL)`);
 });
 
 module.exports = db;
