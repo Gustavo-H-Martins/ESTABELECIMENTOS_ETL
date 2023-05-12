@@ -41,7 +41,7 @@ router.route("/estabelecimentos")
 
     db.all(query, [pageSize, offset], (err, rows) => {
       if (err) {
-        console.log(query)
+        //console.log(query)
         res.status(500).json({ error: err.message });
         return;
       }
@@ -141,7 +141,7 @@ router.route("/estabelecimentos/counts")
     if (groupby) query = query.replace(/\/\*\*\//g, ` GROUP BY ${groupby}`);
     if (groupby) query = query.replace(/COUNT\(\*\)/g, `${groupby}, COUNT(*)`);
     if (orderby) query = query.replace(";", `ORDER BY TOTAL ${orderby} ;`);
-    console.log(query)
+    //console.log(query)
 
     db.all(query, (err, rows) => {
       if (err) {
