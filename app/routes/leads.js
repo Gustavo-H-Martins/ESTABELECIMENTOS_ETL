@@ -12,6 +12,7 @@ const crypto = require('crypto');
 // verifica o jwt
 function verificaJWT(req, res, next) {
   const token = req.headers['authorization'];
+  const SECRETKEY = req.headers['x-api-key'];
   
   // Verifique o token JWT para extrair o userId
   jwt.verify(token, SECRETKEY, (err, decoded) => {
@@ -89,6 +90,7 @@ router.route("/login")
           res.json({
               auth: true,
               token,
+              SECRETKEY,
               expiresIn: 3000
           });
       } else {
