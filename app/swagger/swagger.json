@@ -61,86 +61,6 @@
         }
       }
     },
-    "/api/leads/v1/estabelecimentos_rfb": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "x-forwarded-for",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "associados",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "souabrasel",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "tembandeira",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "bandeira",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "uf",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "cidade",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "bairro",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "raio",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "lat",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "lon",
-            "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
     "/api/leads/v1/estabelecimentos/counts": {
       "get": {
         "description": "",
@@ -156,52 +76,12 @@
             "type": "string"
           },
           {
-            "name": "uf",
+            "name": "associados",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "cidade",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "bairro",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "groupby",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "orderby",
-            "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/api/leads/v1/estabelecimentos_rfb/counts": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "x-forwarded-for",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "bandeira",
+            "name": "souabrasel",
             "in": "query",
             "type": "string"
           },
