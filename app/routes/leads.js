@@ -5,6 +5,35 @@
 const db = require('../config/db');
 const logToDatabase = require('../config/log')
 const router = require('express').Router();
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+
+// definindo a secretkey só a título de teste
+// verifica o jwt
+function verificaJWT(req, res, next) {
+  const token = req.headers['authorization'];
+  
+  // Verifique o token JWT para extrair o userId
+  jwt.verify(token, SECRETKEY, (err, decoded) => {
+      if (err) return res.status(401).end();
+      
+      // Consulte o banco de dados para obter a secretKey do usuário
+      db.get('SELECT secretKey FROM users WHERE userId = ?', [decoded.userId], (err, row) => {
+          if (err || !row) {
+              // Ocorreu um erro ao consultar o banco de dados ou o usuário não foi encontrado
+              res.status(401).end();
+          } else {
+              // Verifique novamente o token JWT usando a secretKey do usuário
+              jwt.verify(token, row.secretKey, (err, decoded) => {
+                  if (err) return res.status(401).end();
+                  
+                  req.userId = decoded.userId;
+                  next();
+              });
+          }
+      });
+  });
+}
 /**
  * Conexão com o DB
  */
@@ -12,10 +41,67 @@ const router = require('express').Router();
 /**
  * Router - estrutura
  */
+// registro
 
+router.route("/register")
+.post(function(req, res, next) {
+    const username = req.body.username;
+    const password = req.body.password;
+    //const secretKey = crypto.randomBytes(64).toString('hex');
+    const buffer = crypto.randomBytes(64);
+    //console.log(buffer); // 64
+
+    const secretKey = buffer.toString('hex');
+    //console.log(secretKey); // 128
+    db.get('SELECT * FROM tb_usuario WHERE username = ? AND password = ?', [username, password], (err, row) => {
+      if (err) {
+        res.status(500).send('Ocorreu um erro ao verificar as credenciais do usuário');
+      } else if (!row) {
+    // Insira as informações do usuário na tabela de usuários do banco de dados
+    db.run('INSERT INTO tb_usuario (username, password, secretKey) VALUES (?, ?, ?)', [username, password, secretKey], (err) => {
+        if (err) {
+            // Ocorreu um erro ao inserir os dados
+            res.status(500).send('Ocorreu um erro ao registrar o usuário');
+        } else {
+            // Os dados foram inseridos com sucesso
+            res.send('Registro bem-sucedido');
+        }
+    })
+    } else if (row.username === username) {
+      res.status(401).send('usuario já cadastrado tente fazer logi!')
+    }
+});
+});
+// Login
+router.route("/login")
+.post(function (req, res) {
+  const { username, password } = req.body;
+  
+  // Consulte o banco de dados para verificar se há um registro na tabela de usuários com o mesmo nome de usuário e senha
+  db.get('SELECT * FROM tb_usuario WHERE username = ? AND password = ?', [username, password], (err, row) => {
+      if (err) {
+          // Ocorreu um erro ao consultar o banco de dados
+          res.status(500).send('Ocorreu um erro ao verificar as credenciais do usuário');
+      } else if (row) {
+          // As credenciais do usuário são válidas
+          const SECRETKEY = row.secretKey
+          const token = jwt.sign({ userId: row.userId },SECRETKEY , { expiresIn: 3000 });
+          res.json({
+              auth: true,
+              token,
+              expiresIn: 3000
+          });
+      } else {
+          // As credenciais do usuário são inválidas
+          res.status(401).end();
+      }
+  });
+});
 // GetAll
 router.route("/estabelecimentos")
-  .get(function(req, res, next) {
+  
+  .get(verificaJWT,function(req, res, next) {
+    console.log(`O ${req.userId} fez esta chamada!`)
     const clientIp = req.ip;
     const bandeira = req.query.bandeira ? [req.query.bandeira.toUpperCase()] : null;
     const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
