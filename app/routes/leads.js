@@ -31,7 +31,7 @@ router.route("/estabelecimentos")
                   /**/
                   `;
     let conditions = [];
-    if (bandeira) query = `SELECT * FROM ${bandeira}`;
+    if (bandeira) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
     if (bandeira) conditions.push(`BANDEIRAS LIKE "%${bandeira}%"`);
     if (uf) conditions.push(`UF = "${uf}"`);
     if (cidade) conditions.push(`CIDADE = "${cidade}"`);
@@ -81,8 +81,8 @@ router.route("/estabelecimentos/counts")
                   ;
                   `;
     let conditions = [];
-    if (bandeira) query = `SELECT COUNT(*) AS TOTAL FROM ${bandeira}`
-    if (bandeira) conditions.push(`BANDEIRAS LIKE "${bandeira}"`);
+    if (bandeira) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
+    if (bandeira) conditions.push(`BANDEIRAS LIKE "%${bandeira}%"`);
     if (associados) conditions.push(`ASSOCIADO IN ${associadosTuple}`);
     if (souabrasel)  conditions.push(`SOU_ABRASEL IN ${souabraselTuple}`)
     if (uf) conditions.push(`UF = "${uf}"`);
@@ -125,8 +125,8 @@ router.route('/estabelecimentos/bairros')
                 --
                 ;`;
     let conditions = [];
-    if (bandeira) query = `SELECT DISTINCT(BAIRRO) FROM ${bandeira}`
-    if (bandeira) conditions.push(`BANDEIRAS LIKE "${bandeira}"`);
+    if (bandeira) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
+    if (bandeira) conditions.push(`BANDEIRAS LIKE "%${bandeira}%"`);
     if (uf) conditions.push(`UF = "${uf}"`);
     if (cidade) conditions.push(`CIDADE = "${cidade}"`);
     if (bairros) conditions.push(`BAIRRO IN ${bairroTuple}`);
@@ -162,8 +162,8 @@ router.route('/estabelecimentos/cidades')
     let query = `SELECT DISTINCT(CIDADE) FROM RECEITA
                 ;`;
     let conditions = [];
-    if (bandeira) query = `SELECT DISTINCT(CIDADE) FROM ${bandeira}`
-    if (bandeira) conditions.push(`BANDEIRAS LIKE "${bandeira}"`);
+    if (bandeira) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
+    if (bandeira) conditions.push(`BANDEIRAS LIKE "%${bandeira}%"`);
     if (uf) conditions.push(`UF = "${uf}"`);
     if (cidade) conditions.push(`CIDADE = "${cidade}"`);
     if (bairros) conditions.push(`BAIRRO IN ${bairroTuple}`);
