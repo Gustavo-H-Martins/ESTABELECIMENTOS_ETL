@@ -37,10 +37,7 @@ router.route("/estabelecimentos")
         /**/
         `;
     let conditions = [];
-<<<<<<< HEAD
     if (lat !== 0 && lon !== 0) conditions.push(` (ACOS(SIN(RADIANS('${lat}')) * SIN(RADIANS(LATITUDES)) + COS(RADIANS('${lat}')) * COS(RADIANS(LATITUDES)) * COS(RADIANS(LONGITUDES) - RADIANS('${lon}'))) * 6371) <= ${raio}`);
-=======
->>>>>>> 93ddf4e82289621f2b4b06fb66926a4dcc7e3c08
     if (bandeira) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
     if (bandeira) conditions.push(`BANDEIRAS LIKE "%${bandeira}%"`);
     if (associados) conditions.push(`ASSOCIADO IN ${associadosTuple}`);
