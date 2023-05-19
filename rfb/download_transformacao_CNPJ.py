@@ -143,28 +143,32 @@ class EXTRATOR_CNPJ:
 
     def download(self, url: str = None, destino: str = None):
         ### Com requests
-        """
+        
         import requests
         with requests.get(url, stream=True) as response:
-            with open(os.path.join(salvar_onde, arquivo), 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
+            with open(destino, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=32768):
                     f.write(chunk)
 
+        
         """
         ### Com urllib
-        """
+
         import urllib.request
         arquivo = url.split('/')[-1]
         # faz o download do arquivo e salva em salvar_onde/arquivo
-        urllib.request.urlretrieve(url, os.path.join(salvar_onde, arquivo))
+        urllib.request.urlretrieve(url, destino)
         ### Com SmartDL
+        
         """
 
+        """
         ### Com SmartDL
         from pySmartDL import SmartDL
 
-        obj = SmartDL(url, destino, threads=4, progress_bar=False)
+        obj = SmartDL(url, destino, threads=6, progress_bar=False)
         obj.start()
+        """
         return destino
 
     def run(self):
