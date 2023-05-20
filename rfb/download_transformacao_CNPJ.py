@@ -143,7 +143,7 @@ class EXTRATOR_CNPJ:
 
     def download(self, url: str = None, destino: str = None):
         ### Com requests
-        
+       
         import requests
         with requests.get(url, stream=True) as response:
             with open(destino, 'wb') as f:
