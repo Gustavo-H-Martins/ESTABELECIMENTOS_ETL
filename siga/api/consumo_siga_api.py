@@ -7,6 +7,13 @@ import sqlite3
 # obteendo o caminho do diretório atual e construindo o caminho do arquivo a partir dele
 current_dir = os.path.dirname(os.path.abspath(__file__))
 db_file = current_dir.replace(r"siga\api", r"app\files\database.db")
+if os.path.exists(db_file):
+    from backup_limpeza import backup_limpeza_simples
+    from time import localtime, strftime
+    nome_backup = db_file.replace(r"database.db", "") + r"ZIP/"
+    if not os.path.exists(nome_backup):
+        os.makedirs(nome_backup)
+    backup_limpeza_simples(pasta=db_file.replace(r"database.db", ""), nome_zipado=nome_backup + f"database_{strftime('%d-%m-%Y %H_%M_%S', localtime())}.zip", extensao='db')
 file_dados = current_dir.replace(r"api", r"dados/base_siga.csv")
 file_logs = current_dir.replace(r"siga\api",r"logs\siga.log")
 conn = sqlite3.connect(database=db_file)
