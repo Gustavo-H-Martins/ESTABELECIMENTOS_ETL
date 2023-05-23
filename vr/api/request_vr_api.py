@@ -1,8 +1,7 @@
 def get_vr(latitude:str='-19.919052', longitude:str='-43.9386685', raio:str='10' ,distancia:str='10'):
     import requests
     import json
-    url = "https://mapaec.vrbeneficios.io/search/buscaec?"
-
+    url = "https://mapaec.vrbeneficios.io/search/v3/buscaec?"
     payload={}
     # parâmetros da consulta    
     params = {
@@ -10,7 +9,7 @@ def get_vr(latitude:str='-19.919052', longitude:str='-43.9386685', raio:str='10'
         'lon': longitude,
         'raio': raio,
         'distancia': distancia,
-        'produto': '00031',
+        'produto': '31',
         'termo':''
         }
     headers = {
@@ -25,7 +24,7 @@ def get_vr(latitude:str='-19.919052', longitude:str='-43.9386685', raio:str='10'
     'sec-fetch-dest': 'empty',
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'cross-site',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
     }
 
     response = requests.get(url, headers=headers, params=params)

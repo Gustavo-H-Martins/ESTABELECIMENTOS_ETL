@@ -3,6 +3,5 @@
 RAW/*
 
 # de Logs também porque revela informações da minha máquina e isso não é legal.
-logs/*
 *.csv
 backup/
