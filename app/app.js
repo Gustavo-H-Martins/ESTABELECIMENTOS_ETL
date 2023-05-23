@@ -3,11 +3,35 @@
  * libs
  */
 const express = require('express');
+const fs = require('fs');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
+
+const { EventEmitter } = require('events');
+const bus = new EventEmitter();
+
+// Aumentar o limite de ouvintes para o evento "Bus"
+bus.setMaxListeners(20);
+
 var IP = require("ip");
 const app = express();
+
+/**
+ *  Configurando o Markdonw da parte do autor
+ */
+const marked = require('marked');
+const mangle = require('marked-mangle');
+const gfmHeadingId = require('marked-gfm-heading-id');
+
+// Usar a opção mangle fornecida pelo pacote marked-mangle
+marked.use(mangle.mangle());
+
+// Usar a opção headerIds fornecida pelo pacote marked-gfm-heading-id
+const options = {
+	prefix: "my-prefix-",
+};
+marked.use(gfmHeadingId.gfmHeadingId(options));
 
 const PORT = 3000;
 
@@ -19,6 +43,18 @@ const leadsRouter = require('./routes/leads');
 /**
  * Middlewares
  */
+// adicionando favicon
+const path = require('path');
+app.get('/favicon.ico', (req, res) => {
+  res.sendFile(path.join(__dirname, 'files//static/favicon.ico'))
+})
+
+app.get('/autor', (req, res) => {
+  const mdText = fs.readFileSync(path.join(__dirname, 'files//static/apresentação_tech_consulting.md'), 'utf-8');
+  const html = marked.marked(mdText);
+  res.send(html);
+});
+
 // coleta o ip do cliente
 app.use((req, _res, next) => {
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;

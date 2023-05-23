@@ -26,6 +26,9 @@
     "swagger-ui-express": "^4.6.0"
   },
   "devDependencies": {
+    "marked": "^5.0.2",
+    "marked-gfm-heading-id": "^3.0.3",
+    "marked-mangle": "^1.0.1",
     "nodemon": "^2.0.22",
     "sqlite3": "^5.1.6"
   }
