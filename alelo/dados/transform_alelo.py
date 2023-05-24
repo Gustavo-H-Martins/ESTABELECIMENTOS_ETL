@@ -74,7 +74,7 @@ O parâmetro index=False evita que o índice do dataframe seja inserido na tabel
 O parâmetro dtype define o tipo de cada coluna na tabela
 """
 dados.to_sql('tb_alelo', conn, 
-             if_exists='append', index=False, 
+             if_exists='replace', index=False, 
              dtype={'RAZAO_SOCIAL': 'TEXT', #PRIMARY KEY', 
                     'ESTABELECIMENTOS': 'TEXT', 'ENDERECO': 'TEXT', 
                     'BAIRRO': 'TEXT', 'CIDADE': 'TEXT', 'UF': 'TEXT', 

@@ -52,15 +52,6 @@ logging.info(f"ficaram: {dados.shape[0]} dados")
 dados.to_csv(base_rfb,sep=";", index=False, encoding="utf-8")
 #Criar uma conexão com o banco de dados sqlite
 db_file = current_dir.replace(r"rfb\dados\csv", r"app\files\database.db")
-if os.path.exists(db_file):
-    import sys
-    sys.path.append(current_dir.replace(r"\dados\csv", ""))
-    from backup_limpeza import backup_limpeza_simples
-    from time import localtime, strftime
-    nome_backup = db_file.replace(r"database.db", "") + r"ZIP/"
-    if not os.path.exists(nome_backup):
-        os.makedirs(nome_backup)
-    backup_limpeza_simples(pasta=db_file.replace(r"database.db", ""), nome_zipado=nome_backup + f"database_{strftime('%d-%m-%Y %H_%M_%S', localtime())}.zip", extensao='db')
 conn = sqlite3.connect(database=db_file)
 
 #Converter o dataframe em uma tabela no banco de dados

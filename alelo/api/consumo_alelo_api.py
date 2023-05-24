@@ -5,7 +5,7 @@ import multiprocessing
 import time
 import os
 import logging
-from datetime import datetime
+from time import localtime, strftime
 from backup_limpeza import backup_limpeza_simples
 # obteendo o caminho do diretório atual e construindo o caminho do arquivo a partir dele
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,7 +18,7 @@ folder_dados = file_dados.replace(r'BASE_ALELO.csv', '')
 logging.basicConfig(level=logging.DEBUG, filename=file_logs,encoding='utf-8', format="%(asctime)s - %(levelname)s - %(message)s")
 
 # difinindo datazip
-datazip = datazip = f'{datetime.now().month}-{datetime.now().year}'
+datazip  = f"{strftime('%d-%m-%Y %H_%M_%S', localtime())}"
 
 # Filtra todos os arquivos csv da pasta
 arquivos_csv = list(filter(lambda x: '.csv' in x, os.listdir(folder_dados)))

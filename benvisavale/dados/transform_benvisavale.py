@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.DEBUG, filename=file_logs,encoding='utf-8', fo
 base_benvisavale = current_dir + r'\BASE_BENVISAVALE.csv'
 
 # qual cabeçalho nós usamos mesmo?
-cabecalho = ['CNPJ', 'RAZAO_SOCIAL', 'ESTABELECIMENTOS',
+cabecalho = [ 'RAZAO_SOCIAL', 'ESTABELECIMENTOS',
             'ENDERECO', 'BAIRRO', 'CIDADE',
             'UF', 'CEP', 'TELEFONE',
             'EMAIL', 'LATITUDE', 'LONGITUDE', 'BANDEIRA']
@@ -65,16 +65,6 @@ logging.info(f'ficaram: {dados.shape[0]} dados')
 dados.to_csv(base_benvisavale,sep=';', index=False, encoding='utf-8')
 #Criar uma conexão com o banco de dados sqlite
 db_file = current_dir.replace('benvisavale\dados', r'app\files\database.db')
-if os.path.exists(db_file):
-    import sys
-    sys.path.append(current_dir.replace(r"dados", r"api"))
-    from backup_limpeza import backup_limpeza_simples
-    from time import localtime, strftime
-    nome_backup = db_file.replace(r"database.db", "") + r"ZIP/"
-    if not os.path.exists(nome_backup):
-        os.makedirs(nome_backup)
-    backup_limpeza_simples(pasta=db_file.replace(r"database.db", ""), nome_zipado=nome_backup + f"database_{strftime('%d-%m-%Y %H_%M_%S', localtime())}.zip", extensao='db')
-conn = sqlite3.connect(database=db_file)
 conn = sqlite3.connect(database=db_file)
 
 #Converter o dataframe em uma tabela no banco de dados
@@ -84,7 +74,7 @@ O parâmetro index=False evita que o índice do dataframe seja inserido na tabel
 O parâmetro dtype define o tipo de cada coluna na tabela
 """
 dados.to_sql('tb_benvisavale', conn, 
-             if_exists='append', index=False, 
+             if_exists='replace', index=False, 
              dtype={'RAZAO_SOCIAL': 'TEXT', #PRIMARY KEY', 
                     'ESTABELECIMENTOS': 'TEXT', 'ENDERECO': 'TEXT', 
                     'BAIRRO': 'TEXT', 'CIDADE': 'TEXT', 'UF': 'TEXT', 
