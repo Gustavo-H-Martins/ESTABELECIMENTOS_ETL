@@ -5,6 +5,7 @@ CREATE INDEX IF NOT EXISTS idx_tb_benvisavale ON tb_benvisavale (RAZAO_SOCIAL, C
 CREATE INDEX IF NOT EXISTS idx_tb_sodexo ON tb_sodexo (RAZAO_SOCIAL, CIDADE, BAIRRO);
 CREATE INDEX IF NOT EXISTS idx_tb_ticket ON tb_ticket (CNPJ);
 CREATE INDEX IF NOT EXISTS idx_tb_vr ON tb_vr (CNPJ);
+CREATE INDEX IF NOT EXISTS idx_tb_siga ON tb_siga (CNPJ);
 
 CREATE TEMP VIEW  TICKET AS
     SELECT 

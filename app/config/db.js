@@ -14,13 +14,15 @@ const db = new sqlite3.Database(dbFile, (err) => {
       console.error(err.message);
     }
     console.log('conectado no banco de dados.');
-    db.exec(`CREATE INDEX IF NOT EXISTS idx_tb_rfb_local ON tb_rfb (RAZAO_SOCIAL, CIDADE, BAIRRO);
+    db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_tb_rfb_local ON tb_rfb (RAZAO_SOCIAL, CIDADE, BAIRRO);
     CREATE INDEX IF NOT EXISTS idx_tb_rfb_cnpj ON tb_rfb (CNPJ);
     CREATE INDEX IF NOT EXISTS idx_tb_alelo ON tb_alelo (RAZAO_SOCIAL, CIDADE, BAIRRO);
     CREATE INDEX IF NOT EXISTS idx_tb_benvisavale ON tb_benvisavale (RAZAO_SOCIAL, CIDADE, BAIRRO);
     CREATE INDEX IF NOT EXISTS idx_tb_sodexo ON tb_sodexo (RAZAO_SOCIAL, CIDADE, BAIRRO);
     CREATE INDEX IF NOT EXISTS idx_tb_ticket ON tb_ticket (CNPJ);
     CREATE INDEX IF NOT EXISTS idx_tb_vr ON tb_vr (CNPJ);
+    CREATE INDEX IF NOT EXISTS idx_tb_siga ON tb_siga (CNPJ);
     
     CREATE TEMP VIEW  TICKET AS
         SELECT 
