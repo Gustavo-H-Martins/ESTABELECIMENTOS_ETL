@@ -65,6 +65,15 @@ logging.info(f'ficaram: {dados.shape[0]} dados')
 dados.to_csv(base_vr,sep=';', index=False, encoding='utf-8')
 #Criar uma conexão com o banco de dados sqlite
 db_file = current_dir.replace('vr\dados', r'app\files\database.db')
+if os.path.exists(db_file):
+    import sys
+    sys.path.append(current_dir.replace(r"dados", r"api"))
+    from backup_limpeza import backup_sem_limpeza
+    from time import localtime, strftime
+    nome_backup = db_file.replace(r"database.db", "") + r"ZIP/"
+    if not os.path.exists(nome_backup):
+        os.makedirs(nome_backup)
+    backup_sem_limpeza(pasta=db_file.replace(r"database.db", ""), nome_zipado=nome_backup + f"database_{strftime('%d-%m-%Y %H_%M_%S', localtime())}.zip", extensao='db')
 conn = sqlite3.connect(database=db_file)
 
 #Converter o dataframe em uma tabela no banco de dados
@@ -74,7 +83,7 @@ O parâmetro index=False evita que o índice do dataframe seja inserido na tabel
 O parâmetro dtype define o tipo de cada coluna na tabela
 """
 dados.to_sql('tb_vr', conn, 
-             if_exists='append', index=False, 
+             if_exists='replace', index=False, 
              dtype={'CNPJ': 'TEXT PRIMARY KEY', 
                     'ESTABELECIMENTOS': 'TEXT', 'ENDERECO': 'TEXT', 
                     'BAIRRO': 'TEXT', 'CIDADE': 'TEXT', 'UF': 'TEXT', 
