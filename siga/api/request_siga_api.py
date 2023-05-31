@@ -2,12 +2,13 @@
 import os
 from dotenv import load_dotenv
 
+env = os.path.dirname(os.path.abspath(__file__)).replace(r"siga\api", ".env")
+
 # carrega variáveis de ambiente no script
-load_dotenv(".env")
+load_dotenv(env)
 
 # carrega a variável da chave de api no script
 API_KEY_LEADS_SIGA = os.getenv("API_KEY_LEADS_SIGA")
-
 
 def get_siga(chave:str = API_KEY_LEADS_SIGA):
     import requests
@@ -24,10 +25,10 @@ def get_siga(chave:str = API_KEY_LEADS_SIGA):
         "SEC_REG" : d["S/R"].upper() if d["S/R"] else "",
         "NOME_FANTASIA" : d["Nome Fantasia"].upper() if d["Nome Fantasia"] else "",
         "RAZAO_SOCIAL" : d["Razão Social"].upper() if d["Razão Social"] else "",
-        "CNPJ" : d["CNPJ"],
+        "CNPJ" : d["CNPJ"] if d["CNPJ"] else "",
         "ENDERECO" : d["Logradouro"].upper() if d["Logradouro"] else "" + ", " + d["Numero"].upper() if d["Numero"] else "" + "" + d["Comp."].upper() if d["Comp."] else "",
         "BAIRRO" : d["Bairro"].upper() if d["Bairro"] else "",
-        "CEP" : d["CEP"],
+        "CEP" : d["CEP"] if d["CEP"] else "" ,
         "CIDADE" : d["Cidade"].upper() if d["Cidade"] else "",
         "UF" : d["UF"].upper() if d["UF"] else "",
         "ASSOCIADO": d["Status"].upper(),
