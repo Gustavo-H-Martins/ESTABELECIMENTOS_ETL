@@ -5,3 +5,5 @@
 *.pyc 
 
 *.env
+# ignore a pasta sec
+*.pem
