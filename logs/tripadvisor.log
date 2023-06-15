@@ -1,0 +1,18 @@
+2023-06-13 16:25:07,050 - INFO - ====== WebDriver manager ======
+2023-06-13 16:25:08,322 - INFO - Get LATEST chromedriver version for google-chrome 114.0.5735
+2023-06-13 16:25:08,935 - INFO - There is no [win32] chromedriver for browser 114.0.5735 in cache
+2023-06-13 16:25:08,935 - INFO - About to download new driver from https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_win32.zip
+2023-06-13 16:25:09,848 - INFO - Driver has been saved in cache [C:\Users\ABRASEL NACIONAL\.wdm\drivers\chromedriver\win32\114.0.5735]
+2023-06-13 16:26:20,703 - INFO - ====== WebDriver manager ======
+2023-06-13 16:26:21,111 - INFO - There is no [win32] chromedriver "latest" for browser google-chrome "114.0.5735" in cache
+2023-06-13 16:26:21,111 - INFO - Get LATEST chromedriver version for google-chrome
+2023-06-13 16:26:21,221 - INFO - About to download new driver from https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_win32.zip
+2023-06-13 16:26:21,757 - INFO - Driver has been saved in cache [C:\Users\ABRASEL NACIONAL\.wdm\drivers\chromedriver\win32\114.0.5735.90]
+2023-06-13 16:27:50,058 - INFO - ====== WebDriver manager ======
+2023-06-13 16:27:50,458 - INFO - Driver [C:\Users\ABRASEL NACIONAL\.wdm\drivers\chromedriver\win32\114.0.5735.90\chromedriver.exe] found in cache
+2023-06-13 16:29:30,376 - INFO - ====== WebDriver manager ======
+2023-06-13 16:29:30,860 - INFO - Get LATEST chromedriver version for google-chrome 114.0.5735
+2023-06-13 16:29:31,378 - INFO - Driver [C:\Users\ABRASEL NACIONAL\.wdm\drivers\chromedriver\win32\114.0.5735\chromedriver.exe] found in cache
+2023-06-13 16:29:46,537 - INFO - ====== WebDriver manager ======
+2023-06-13 16:29:46,928 - INFO - Get LATEST chromedriver version for google-chrome 114.0.5735
+2023-06-13 16:29:47,391 - INFO - Driver [C:\Users\ABRASEL NACIONAL\.wdm\drivers\chromedriver\win32\114.0.5735\chromedriver.exe] found in cache
