@@ -56,13 +56,18 @@ app.get('/autor', (req, res) => {
 });
 
 // coleta o ip do cliente
-app.use((req, _res, next) => {
+app.use((err, req, res, next) => {
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const date = new Date()
     const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // formata a data como DD/MM/AAAA
     const formattedTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`; // formata a hora como HH:MM:SS
     dataChamada = `Data: ${formattedDate} - Hora: ${formattedTime}`
     console.log(`IP do cliente: ${ip} Em ${dataChamada}`);
+    if (err.code === 'ECONNREFUSED'){
+      res.status(502).json({error: 'Bad Gateway meu amigo, tá barrado na entrada!'});
+    } else {
+      next(err);
+    }
     next();
   });
 // analisa solicitações recebidas com cargas JSON 

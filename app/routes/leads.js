@@ -16,6 +16,7 @@ const router = require('express').Router();
 router.route("/estabelecimentos")
   .get(function(req, res, next) {
     const clientIp = req.ip;
+    const cnpj = req.query.cnpj ? [req.query.cnpj.toUpperCase()] : null;
     const associados = req.query.associados ? req.query.associados.split(",") : null;
     const associadosTuple = associados ? `(${associados.map((valor) => `"${valor.toUpperCase()}"`).join(",")})` : null;
     const souabrasel = req.query.souabrasel ? req.query.souabrasel.split(",") : null;
@@ -45,6 +46,7 @@ router.route("/estabelecimentos")
     if (uf) conditions.push(`UF = "${uf}"`);
     if (cidade) conditions.push(`CIDADE = "${cidade}"`);
     if (bairros) conditions.push(`BAIRRO IN ${bairroTuple}`);
+    if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
     if (conditions.length > 0) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
     if (associados == 0) query = query.replace(`ASSOCIADO IN ("0")`, `ASSOCIADO = 0`);
     if (souabrasel == 0) query = query.replace(`SOU_ABRASEL IN ("0")`, `SOU_ABRASEL = 0`);
@@ -55,16 +57,27 @@ router.route("/estabelecimentos")
         res.status(500).json({ error: err.message });
         return;
       }
-      console.log(query)
+            // Verifique se a solicitação inclui um cabeçalho Range
+      if (req.headers.range) {
+        // Extrair o intervalo de conteúdo solicitado pelo cliente
+        const [start, end] = req.headers.range.replace(/bytes=/, "").split("-").map(v => parseInt(v) + offset);
+        // Retornar apenas o intervalo de conteúdo solicitado
+        const content = rows.slice(start, end);
+        // Incluir um cabeçalho Content-Range na resposta
+        res.setHeader("Content-Range", `bytes ${start}-${end}/${rows.length}`);
+        // Retornar o código de status 206 e o conteúdo parcial
+        res.status(206).json(content);
+      } else {
+        // Retornar o código de status 200 e todo o conteúdo
+        res.status(200).json(rows);
+      }
+      //console.log(query)
       // Formatando data e hora para incluir no log
       const date = new Date()
       const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // formata a data como DD/MM/AAAA
       const formattedTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`; // formata a hora como HH:MM:SS
       dataChamada = `Data: ${formattedDate} - Hora: ${formattedTime}`
       logToDatabase(clientIp, `Retornando ${rows.length} dados de "${bandeira}" no estado de "${uf}" cidade de ${cidade}`, 'INFO', dataChamada)
-      res.status(200).json(
-        rows
-      );
     });
   })
 // GetAll-contagem
@@ -129,6 +142,7 @@ router.route("/estabelecimentos/counts")
 router.route('/estabelecimentos/bairros')
   .get(function(req, res, next) {
     const clientIp = req.ip;
+    const cnpj = req.query.cnpj ? [req.query.cnpj.toUpperCase()] : null;
     const bandeira = req.query.bandeira ? [req.query.bandeira.toUpperCase()] : null;
     const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
     const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
@@ -144,6 +158,7 @@ router.route('/estabelecimentos/bairros')
     if (uf) conditions.push(`UF = "${uf}"`);
     if (cidade) conditions.push(`CIDADE = "${cidade}"`);
     if (bairros) conditions.push(`BAIRRO IN ${bairroTuple}`);
+    if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
     if (conditions.length > 0) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
 
     //console.log(query)
@@ -168,6 +183,7 @@ router.route('/estabelecimentos/bairros')
 router.route('/estabelecimentos/cidades')
   .get(function(req, res, next) {
     const clientIp = req.ip;
+    const cnpj = req.query.cnpj ? [req.query.cnpj.toUpperCase()] : null;
     const bandeira = req.query.bandeira ? [req.query.bandeira.toUpperCase()] : null;
     const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
     const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
@@ -182,6 +198,7 @@ router.route('/estabelecimentos/cidades')
     if (uf) conditions.push(`UF = "${uf}"`);
     if (cidade) conditions.push(`CIDADE = "${cidade}"`);
     if (bairros) conditions.push(`BAIRRO IN ${bairroTuple}`);
+    if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
     if (conditions.length > 0) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
 
 
