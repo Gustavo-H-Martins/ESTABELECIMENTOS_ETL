@@ -114,6 +114,6 @@ function onStart(){
 }
 
 //app.listen(PORT, onStart);
-http.createServer(app).listen(httpsPort);
+http.createServer(app).listen(httpsPort, onStart);
 //https.createServer(httpsOptions,app).listen(httpsPort, onStart);
 module.exports = app;
