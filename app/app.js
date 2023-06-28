@@ -3,6 +3,8 @@
  * libs
  */
 const express = require('express');
+const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -14,7 +16,19 @@ const bus = new EventEmitter();
 // Aumentar o limite de ouvintes para o evento "Bus"
 bus.setMaxListeners(20);
 
+/*
+// Acessa e ler os arquivos de certificado e key ssl
+const httpsOptions = {
+      key: fs.readdirSync('key.pem'),
+      cert : fs.readdirSync('cert.pem'),
+      passphrase: 'abrasel'
+};
+*/
+
+// Pega o ip da máquina
 var IP = require("ip");
+
+// Inicia o App
 const app = express();
 
 /**
@@ -33,7 +47,13 @@ const options = {
 };
 marked.use(gfmHeadingId.gfmHeadingId(options));
 
-const PORT = 3000;
+// Define as portas
+/*
+const httpPort = 8080;
+const httpsPort = 8443;
+*/
+
+const httpsPort = 8443
 
 /**
  * Routes.
@@ -90,9 +110,10 @@ app.use('/api/leads/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // starta a api service
 function onStart(){
-    console.log(`O servidor está escutando na porta ${PORT} url: http://${IP.address()}:${PORT}/`);
+    console.log(`O servidor está escutando na porta ${httpsPort} url: http://${IP.address()}:${httpsPort}/`);
 }
 
-app.listen(PORT, onStart);
-
+//app.listen(PORT, onStart);
+http.createServer(app).listen(httpsPort);
+//https.createServer(httpsOptions,app).listen(httpsPort, onStart);
 module.exports = app;

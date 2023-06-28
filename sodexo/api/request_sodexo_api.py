@@ -61,32 +61,37 @@ def  get_establishments(latitude:str = '-19.6447323', longitude:str = '-43.90449
     while total == -1 or startAt < total:
         # a chamada em si
         response = requests.post(url, headers=headers, data=params)
-        # retorna uma zoeira de dados, então vamos manipular e pegar só o que podemos usar
-        data = json.loads(response.json()['responseData'])
-        hits = data['hits']['hits']
-        dados = []
-        for hit in hits:
-            source = hit["_source"]
-            establishment = {
-                "CNPJ" : source.get('cnpj', None),
-                "RAZAO_SOCIAL": source["socialname"],
-                "ESTABELECIMENTOS": source["fantasyname"],
-                "ENDERECO":  source['place'] + ' ' + source["address"] + ' ' + source["number"] + " " + source["complement"],
-                "BAIRRO": source["town"],
-                "CIDADE": source["city"],
-                "UF": source["state"],
-                "CEP": source["zipcode"],
-                "TELEFONE": source["phones"],
-                "EMAIL": source["email"],
-                "LATITUDE": source['location']['lat'],
-                "LONGITUDE":source['location']['lon'],
-                "BANDEIRA": hit['_index'].upper(),  
-            }
-            dados.append(establishment)
-        # Retorna um json que é aqui vou reparar e buscar somente o campo "hits"
-        results.extend(dados)
-        total = data['hits']['total']
-        startAt += limit
-        params['startAt'] = str(startAt)
+        try:
+            # retorna uma zoeira de dados, então vamos manipular e pegar só o que podemos usar
+            data = json.loads(response.json()['responseData'])
+            hits = data['hits']['hits']
+            dados = []
+            for hit in hits:
+                source = hit["_source"]
+                establishment = {
+                    "CNPJ" : source.get('cnpj', None),
+                    "RAZAO_SOCIAL": source["socialname"],
+                    "ESTABELECIMENTOS": source["fantasyname"],
+                    "ENDERECO":  source['place'] + ' ' + source["address"] + ' ' + source["number"] + " " + source["complement"],
+                    "BAIRRO": source["town"],
+                    "CIDADE": source["city"],
+                    "UF": source["state"],
+                    "CEP": source["zipcode"],
+                    "TELEFONE": source["phones"],
+                    "EMAIL": source["email"],
+                    "LATITUDE": source['location']['lat'],
+                    "LONGITUDE":source['location']['lon'],
+                    "BANDEIRA": hit['_index'].upper(),  
+                }
+                dados.append(establishment)
+            # Retorna um json que é aqui vou reparar e buscar somente o campo "hits"
+            results.extend(dados)
+            total = data['hits']['total']
+            startAt += limit
+            params['startAt'] = str(startAt)
+        except Exception as e:
+            print(f"deu erro aqui : [{e}: {response.text}]")
+            pass
+
     #print(f'Total de dados: {len(results)}')
     return results

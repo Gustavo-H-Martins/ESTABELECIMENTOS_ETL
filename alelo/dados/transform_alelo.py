@@ -25,7 +25,7 @@ cabecalho = ['CNPJ', 'RAZAO_SOCIAL', 'ESTABELECIMENTOS',
 
 # carregada os dados no dataframe pandas aqui, simples né?
 
-dados  = pd.read_csv(base_alelo, sep=';',usecols=cabecalho, dtype='string')
+dados  = pd.read_csv(base_alelo, sep=';',usecols=cabecalho, dtype='string', encoding='utf-8', encoding_errors='ignore')
 
 # a parte de transform de fato está toda aqui, bem simples:
 # com quaanto de dadps começou?

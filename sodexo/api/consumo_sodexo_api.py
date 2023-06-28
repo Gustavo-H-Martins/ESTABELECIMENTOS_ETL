@@ -6,6 +6,7 @@ import os
 import logging
 from datetime import datetime
 from backup_limpeza import backup_limpeza_simples
+from requests.exceptions import ConnectionError
 # obteendo o caminho do diretório atual e construindo o caminho do arquivo a partir dele
 current_dir = os.path.dirname(os.path.abspath(__file__))
 file_localidades = current_dir.replace(r'sodexo\api', r'localidades\localidades.txt')
@@ -17,15 +18,18 @@ folder_dados = file_dados.replace(r'BASE_SODEXO.csv', '')
 # configurando o registro de logs
 logging.basicConfig(level=logging.DEBUG, filename=file_logs,encoding='utf-8', format="%(asctime)s - %(levelname)s - %(message)s")
 
+# Cria um objeto de bloqueio global
+lock = multiprocessing.Lock()
+
 # difinindo datazip
 datazip = datazip = f'{datetime.now().month}-{datetime.now().month}-{datetime.now().year}'
-
+"""
 # Filtra todos os arquivos csv da pasta
 arquivos_csv = list(filter(lambda x: '.csv' in x, os.listdir(folder_dados)))
 # Se a pasta não estiver vazia faz o backup dos arquivos e limpa ela.
 if len(arquivos_csv) >= 1:
         backup_limpeza_simples(pasta=folder_dados, nome_zipado=f'{folder_dados}sodexo_{datazip}.zip')
-
+"""
 # Abrindo, lendo e salvando o arquivo com os municípios
 with open(file_localidades,'r', encoding='UTF-8') as municipios:
     next(municipios)
@@ -34,6 +38,8 @@ with open(file_localidades,'r', encoding='UTF-8') as municipios:
 
 # definindo o paralelismo
 def processo(municipio):
+    # Antes de acessar o arquivo, pegando o bloqueio
+    lock.acquire()
     try:
         localidade = municipio.split('\t')
         logging.info(f'pegando dados de {localidade[0]}')
@@ -55,9 +61,15 @@ def processo(municipio):
                 Adicionar o dataframe ao arquivo CSV existente
             """
             dados.write_csv(file_dados,separator=';', batch_size=1024)
-    except Exception as e:
-        logging.warning(f"deu erro aqui : [{e}]")
+    except ConnectionError as e:
+        logging.warning(f"Erro de conexão ao acessar o host: {e}")
         pass
+    except Exception as e:
+        logging.info(f"deu erro aqui : [{e}]")
+        pass
+    finally:
+        # Após concluir o acesso ao arquivo, libero o bloqueio
+        lock.release()
 if __name__ == '__main__':
-    with multiprocessing.Pool(processes=3) as pool:
-        pool.map(processo, localidades)
+    with multiprocessing.Pool(processes=5) as pool:
+        pool.map(processo, localidades[18980:])

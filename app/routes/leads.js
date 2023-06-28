@@ -57,20 +57,12 @@ router.route("/estabelecimentos")
         res.status(500).json({ error: err.message });
         return;
       }
-            // Verifique se a solicitação inclui um cabeçalho Range
-      if (req.headers.range) {
-        // Extrair o intervalo de conteúdo solicitado pelo cliente
-        const [start, end] = req.headers.range.replace(/bytes=/, "").split("-").map(v => parseInt(v) + offset);
-        // Retornar apenas o intervalo de conteúdo solicitado
-        const content = rows.slice(start, end);
-        // Incluir um cabeçalho Content-Range na resposta
-        res.setHeader("Content-Range", `bytes ${start}-${end}/${rows.length}`);
-        // Retornar o código de status 206 e o conteúdo parcial
-        res.status(206).json(content);
-      } else {
-        // Retornar o código de status 200 e todo o conteúdo
-        res.status(200).json(rows);
-      }
+      // Transforma a string em um array e remove os espaços em branco
+        rows = rows.map(row => {
+                row.BANDEIRAS = row.BANDEIRAS.split(',').map(element => element.trim());
+                return row;
+        });
+      /*
       //console.log(query)
       // Formatando data e hora para incluir no log
       const date = new Date()
@@ -78,6 +70,10 @@ router.route("/estabelecimentos")
       const formattedTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`; // formata a hora como HH:MM:SS
       dataChamada = `Data: ${formattedDate} - Hora: ${formattedTime}`
       logToDatabase(clientIp, `Retornando ${rows.length} dados de "${bandeira}" no estado de "${uf}" cidade de ${cidade}`, 'INFO', dataChamada)
+        */
+      res.status(200).json(
+        rows
+      );
     });
   })
 // GetAll-contagem
