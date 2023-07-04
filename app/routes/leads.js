@@ -5,10 +5,15 @@
 const db = require('../config/db');
 const logToDatabase = require('../config/log')
 const router = require('express').Router();
-/**
- * Conexão com o DB
- */
 
+/**
+ * Funções de apoio
+ */
+// INCLUSÃO DA FUNÇÃO DE VALIDAÇÃO DE ENTRADA DE BANDEIRAS
+function generateLikeClause(columnName, values) {
+  const likeClauses = values.map((value) => `${columnName} LIKE "%${value}%"`);
+  return likeClauses.join(' OR ');
+}
 /**
  * Router - estrutura
  */
@@ -21,7 +26,12 @@ router.route("/estabelecimentos")
     const associadosTuple = associados ? `(${associados.map((valor) => `"${valor.toUpperCase()}"`).join(",")})` : null;
     const souabrasel = req.query.souabrasel ? req.query.souabrasel.split(",") : null;
     const souabraselTuple = souabrasel ? `(${souabrasel.map((valor) => `"${valor.toUpperCase()}"`).join(",")})` : null;
-    const bandeira = req.query.bandeira ? [req.query.bandeira.toLowerCase()] : null;
+    //const bandeira = req.query.bandeira ? [req.query.bandeira.toLowerCase()] : null;
+    // INCLUSÃO DA VALIDAÇÃO DE ENTRADA DE BANDEIRAS
+    const bandeira = req.query.bandeira ? req.query.bandeira.split(",") : null;
+    const bandeiraTuple = bandeira ? bandeira.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
+    const likeClause = bandeiraTuple ? generateLikeClause('BANDEIRAS', bandeiraTuple) : null;
+
     const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
     const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
     const bairros = req.query.bairro ? req.query.bairro.split(",") : null;
@@ -33,14 +43,15 @@ router.route("/estabelecimentos")
     const lat = parseFloat(req.query.lat) || 0
     const lon = parseFloat(req.query.lon) || 0
     let query = `
-        SELECT * FROM RECEITA
+        SELECT DISTINCT * FROM RECEITA
         --
         /**/
         `;
     let conditions = [];
     if (lat !== 0 && lon !== 0) conditions.push(` (ACOS(SIN(RADIANS('${lat}')) * SIN(RADIANS(LATITUDES)) + COS(RADIANS('${lat}')) * COS(RADIANS(LATITUDES)) * COS(RADIANS(LONGITUDES) - RADIANS('${lon}'))) * 6371) <= ${raio}`);
-    if (bandeira) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
-    if (bandeira) conditions.push(`BANDEIRAS LIKE "%${bandeira}%"`);
+    // Validação dos parâmetros das bandeiras
+    if (bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
+    if (bandeira) conditions.push(`${likeClause}`);
     if (associados) conditions.push(`ASSOCIADO IN ${associadosTuple}`);
     if (souabrasel) conditions.push(`SOU_ABRASEL IN ${souabraselTuple}`)
     if (uf) conditions.push(`UF = "${uf}"`);
