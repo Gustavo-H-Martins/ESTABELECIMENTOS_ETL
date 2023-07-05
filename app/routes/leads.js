@@ -198,7 +198,7 @@ router.route("/estabelecimentos/counts")
         return;
       }
       // Testando a função com diferentes parâmetros
-      rows = agrupar(rows, groupby);
+      if (groupby) rows = agrupar(rows, groupby);
       //console.log(rows)
       /*
       //console.log(query)
