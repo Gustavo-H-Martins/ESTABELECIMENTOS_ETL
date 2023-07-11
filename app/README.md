@@ -36,7 +36,19 @@ $ npm start
 A API possui as seguintes [rotas](./app/routes/leads.js):
 
 * #### GET `/api/v2/leads/estabelecimentos/` 
-Este endpoint retorna uma lista de estabelecimentos. Você pode filtrar os resultados usando os parâmetros de consulta `bandeira`, `uf` e `cidade`. Esses parâmetros são opcionais e podem ser usados em qualquer combinação. Por exemplo, você pode fornecer apenas o parâmetro `bandeira` para retornar estabelecimentos de uma determinada bandeira em todos os estados e cidades.
+Este endpoint retorna uma lista de estabelecimentos. Você pode filtrar os resultados usando os parâmetros de consulta: 
+- `bandeira` 
+- `uf`
+- `cidade` 
+- `bairros` 
+- `associados`
+- `souabrasel`
+- `lat`
+- `lon`
+- `raio`
+
+
+Esses parâmetros são opcionais e podem ser usados em qualquer combinação. Por exemplo, você pode fornecer apenas o parâmetro `bandeira` para retornar estabelecimentos de uma determinada bandeira em todos os estados e cidades.
 
 Você também pode usar os parâmetros de consulta `page` e `pageSize` para implementar a paginação dos resultados. O parâmetro `page` especifica o número da página a ser retornada, enquanto o parâmetro `pageSize` especifica o número de resultados por página. Se esses parâmetros não forem fornecidos, serão usados valores padrão de `1` e `100`, respectivamente.
 
@@ -50,14 +62,19 @@ exemplos de uso
         /estabelecimentos?bandeira=sodexo&uf=SP&page=3
         /estabelecimentos?uf=RJ
         /estabelecimentos
-* #### GET `/api/v2/leads/bandeira=all/estado={uf}` 
-Retorna uma lista de leads determinado pelo estado selecionado
-* #### GET `/api/v2/leads/bandeira={bandeira}/estado=all`
-Retorna uma lista de leads determinado pela bandeira do cartão selecionado
-* #### GET `/api/v2/leads/bandeira={bandeira}/estado={uf}`
-Retorna uma lista de leads determinado pela bandeira e o estado selecionado
-* #### GET `/api/v2/leads/bandeira={bandeira}/estado={uf}/cidade={cidade}`
-Retorna uma lista de leads determinado pela bandeira, o estado e a cidade selecionados
+* #### GET `/api/v2/leads/estabelecimentos/counts` 
+Esse endpoint possui os mesmos filtros do endpoint supracitado, com a diferença que os dados aqui retornados são contagens de ocorrencias pelos filtros passados.
+
+Há também os parâmetros adicionais:
+- `groupby`
+- `orderby`
+Usados para ordenação dos dados retornados pela api, por padrão o order by é desc pelo campo `TOTAL`
+
+* #### GET `/api/v2/leads/estabelecimentos/bairros`
+Retorna uma lista de bairros onde há pelo menos um dos leads da base.
+* #### GET `/api/v2/leads//estabelecimentos/cidades`
+Retorna uma lista de das cidades onde há pelo menos um dos leads da base
+
 
 ## Documentação da API
 A documentação da API pode ser encontrada na rota `/api/v2/leads/docs`, onde é possível visualizar a lista de rotas, parâmetros e exemplos de requisições e respostas.
