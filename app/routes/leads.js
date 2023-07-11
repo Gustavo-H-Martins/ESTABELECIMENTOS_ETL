@@ -10,39 +10,111 @@ const {Parser} = require('json2csv');
 /**
  * Funções de apoio
  */
+// Função para formatar o valor do CNPJ
+const formatCnpj = (cnpj) => {
+  // Remover caracteres não numéricos
+  cnpj = cnpj.replace(/\D/g, '');
 
-// INCLUSÃO DA FUNÇÃO PARA CONVERTER JSON EM CSV 
-const jsonToCsv = (data) => { 
-  /*
-  // Definir as colunas do csv 
-  const fields = ['BAIRRO']; 
-  */
-  // Obter as chaves do primeiro objeto como colunas do CSV
-  const fields = Object.keys(data[0]);
-  // Criar um parser com as opções desejadas 
-  const parser = new Parser({ fields }); 
+  // Adicionar os separadores
+  cnpj = cnpj.replace(/(\d{2})(\d)/, '$1.$2');
+  cnpj = cnpj.replace(/(\d{3})(\d)/, '$1.$2');
+  cnpj = cnpj.replace(/(\d{3})(\d)/, '$1/$2');
+  cnpj = cnpj.replace(/(\d{4})(\d)/, '$1-$2');
+
+  return cnpj;
+};
+
+// INCLUSÃO DA FUNÇÃO PARA CONVERTER JSON EM CSV
+const jsonToCsv = (data, cabecalho) => {
+  // Declarar variável fields
+  let fields;
+
+  if (cabecalho) {
+    // Definir o cabeçalho
+    fields = cabecalho;
+  } else {
+    // Obter as chaves do primeiro objeto como colunas do CSV
+    fields = Object.keys(data[0]);
+  }
+
+  // Criar um parser com as opções desejadas
+  const parser = new Parser({ fields, delimiter: ';' });
   
-  // Converter os dados em csv 
-  const csv = parser.parse(data); 
-  
-  // Retornar o csv como um buffer 
-  return Buffer.from(csv); 
+  // Converter os dados em um array de objetos com os campos desejados
+  const dataWithLinks = data.map((obj) => ({
+      CNPJ: formatCnpj(obj.CNPJ),
+      NOME_FANTASIA: obj.NOME_FANTASIA,
+      CIDADE: obj.CIDADE,
+      BAIRRO: obj.BAIRRO,
+      ENDERECO: obj.ENDERECO,
+      TELEFONE: obj.TELEFONE,
+      EMAIL: obj.EMAIL,
+      ASSOCIADO: obj.ASSOCIADO == 0 ? 'NÃO' : obj.ASSOCIADO,
+      SOU_ABRASEL: obj.SOU_ABRASEL == 0 ? 'NÃO' : obj.SOU_ABRASEL,
+      LINK_GOOGLE: `https://www.google.com/search?q=${obj.ESTABELECIMENTO}+${obj.UF}+${obj.CIDADE}+${obj.BAIRRO}`,
+      LINK_GOOGLE_MAPS: `https://www.google.com/maps/search/${obj.ESTABELECIMENTO}+${obj.UF}+${obj.CIDADE}+${obj.BAIRRO}`
+    }));
+
+  // Converter os dados em csv
+  const csv = parser.parse(dataWithLinks);
+
+  // Retornar o csv como um buffer
+  return Buffer.from(csv);
 };
 
 // INCLUSÃO DA FUNÇÃO PARA CONVERTER DADOS JSON EM XLSX
-const jsonToXlsx = async (data) => {
+const jsonToXlsx = async (data, cabecalho) => {
   // Criar um novo workbook
   const workbook = new ExcelJS.Workbook();
   
   // Adicionar uma planilha ao workbook
   const worksheet = workbook.addWorksheet('Dados');
+
+  // Declarar a variável dataAsArray
+  let dataAsArray;
   
-  // Converter os dados em um array de arrays
-  const dataAsArray = data.map((obj) => Object.values(obj));
-  
+  // Adicionar cabeçalho
+  if (cabecalho) {
+    // Adicionar uma linha com os títulos das colunas
+    const headerRow = worksheet.addRow(cabecalho);
+
+    // Deixar todos os títulos das colunas em negrito
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true };
+    });
+    ["CNPJ", "NOME FANTASIA", "CIDADE", "BAIRRO", "ENDEREÇO", "TELEFONE", "E-MAIL", "ASSOCIADO", "TEM SOU ABRASEL", "LINK GOOGLE", "LINK GOOGLE MAPS"]
+    // Converter os dados em um array de arrays
+    dataAsArray = data.map((obj) => [
+      formatCnpj(obj.CNPJ),
+      obj.NOME_FANTASIA,
+      obj.CIDADE,
+      obj.BAIRRO,
+      obj.ENDERECO,
+      obj.TELEFONE,
+      obj.EMAIL,
+      obj.ASSOCIADO == 0 ? 'NÃO' : obj.ASSOCIADO,
+      obj.SOU_ABRASEL == 0 ? 'NÃO' : obj.SOU_ABRASEL,
+      `https://www.google.com/search?q=${obj.ESTABELECIMENTO}+${obj.UF}+${obj.CIDADE}+${obj.BAIRRO}`,
+      `https://www.google.com/maps/search/${obj.ESTABELECIMENTO}+${obj.UF}+${obj.CIDADE}+${obj.BAIRRO}`
+    ]);
+  }  else {
+    // Converter os dados em um array de arrays
+    dataAsArray = data.map((obj) => Object.values(obj));
+    }
   // Adicionar os dados à planilha
   worksheet.addRows(dataAsArray);
-  
+
+  // Adicionar uma borda ao redor de todas as células da planilha
+  worksheet.eachRow((row) => {
+    row.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+    });
+  });
   // Retornar o workbook como um stream
   return workbook.xlsx.writeBuffer();
 };
@@ -244,17 +316,18 @@ router.route("/estabelecimentos")
       logToDatabase(clientIp, `Retornando ${rows.length} dados de "${bandeira}" no estado de "${uf}" cidade de ${cidade}`, 'INFO', dataChamada)
         */
       // Obter o formato desejado do parâmetro format
-    const format = req.query.format ? req.query.format.toLowerCase(): null;
-    if (format === 'xlsx') {
-      const xlsx = await jsonToXlsx(rows);
+    const formato = req.query.formato ? req.query.formato.toLowerCase(): null;
+    const cabecalho = ["CNPJ", "NOME_FANTASIA", "CIDADE", "BAIRRO", "ENDERECO", "TELEFONE", "EMAIL", "ASSOCIADO", "SOU_ABRASEL", "LINK_GOOGLE", "LINK_GOOGLE_MAPS"]
+    if (formato === 'xlsx') {
+      const xlsx = await jsonToXlsx(rows, cabecalho);
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.status(200).send(
         xlsx
         );
     }
     // Se o formato for csv, converter os dados em csv e enviar na resposta
-    else if (format === 'csv') {
-        const csv = jsonToCsv(rows);
+    else if (formato === 'csv') {
+        const csv = jsonToCsv(rows, cabecalho);
         res.setHeader('Content-Type', 'text/csv');
         res.status(200).send(
           csv
@@ -383,15 +456,15 @@ router.route('/estabelecimentos/bairros')
       logToDatabase(clientIp, `Retornando ${rows.length} dados de "${bandeira}" no estado de "${uf}" cidade de ${cidade}`, 'INFO', dataChamada)
 
     // Obter o formato desejado do parâmetro format
-    const format = req.query.format ? req.query.format.toLowerCase(): null;
+    const formato = req.query.formato ? req.query.formato.toLowerCase(): null;
     // Se o formato for xlsx, converter os dados em xlsx e enviar na resposta
-    if (format === 'xlsx') {
+    if (formato === 'xlsx') {
         const xlsx = await jsonToXlsx(rows);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.status(200).send(xlsx);
     }
     // Se o formato for csv, converter os dados em csv e enviar na resposta
-    else if (format === 'csv') {
+    else if (formato === 'csv') {
         const csv = jsonToCsv(rows);
         res.setHeader('Content-Type', 'text/csv');
         res.status(200).send(csv);
