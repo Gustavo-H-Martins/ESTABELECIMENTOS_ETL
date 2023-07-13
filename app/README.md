@@ -1,6 +1,6 @@
 # Api de acesso aos dados de cartões benefícios
         Este repositório serve de modelo de aplicação da api de leads da Abrasel com base nos cartões benefícios parceiros.
-![Static Badge](https://img.shields.io/badge/Desenvolvimento_0.1.2-red)  ![Static Badge](https://img.shields.io/badge/Producao_-0.1.0-green) 
+![Static Badge](https://img.shields.io/badge/Desenvolvimento_-0.1.2-red)  ![Static Badge](https://img.shields.io/badge/Producao_-0.1.0-green) 
 ## Pré-requisitos
 
 Antes de começar, você vai precisar ter instalado em sua máquina as seguintes ferramentas:
