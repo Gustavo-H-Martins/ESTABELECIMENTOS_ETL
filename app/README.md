@@ -1,6 +1,6 @@
 # Api de acesso aos dados de cartões benefícios
         Este repositório serve de modelo de aplicação da api de leads da Abrasel com base nos cartões benefícios parceiros.
-
+![Static Badge](https://img.shields.io/badge/Desenvolvimento_0.1.2-red)  ![Static Badge](https://img.shields.io/badge/Producao_-0.1.0-green) 
 ## Pré-requisitos
 
 Antes de começar, você vai precisar ter instalado em sua máquina as seguintes ferramentas:
@@ -33,7 +33,7 @@ $ npm start
 ```
 
 ## Rotas da API
-A API possui as seguintes [rotas](./app/routes/leads.js):
+A API possui as seguintes [rotas](./routes/leads.js):
 
 * #### GET `/api/v2/leads/estabelecimentos/` 
 Este endpoint retorna uma lista de estabelecimentos. Você pode filtrar os resultados usando os parâmetros de consulta: 
@@ -54,7 +54,7 @@ Você também pode usar os parâmetros de consulta `page` e `pageSize` para impl
 
 O endpoint aceita um cabeçalho opcional `x-forwarded-for`, que pode ser usado para especificar o endereço IP do cliente.
 
-O endpoint retorna um código de status HTTP 200 em caso de sucesso, juntamente com um array JSON contendo os estabelecimentos correspondentes aos critérios de pesquisa. Em caso de erro, o endpoint retorna um código de status HTTP 500 com uma mensagem de erro.
+O endpoint retorna um código de status HTTP 200 em caso de sucesso, juntamente com um array JSON contendo os estabelecimentos correspondentes aos critérios de pesquisa, passando o parâmetro `formato` =XLSX ou =CSV retorna um arquivo nos formatos solicitados para download. Em caso de erro, o endpoint retorna um código de status HTTP 500 com uma mensagem de erro.
 
 exemplos de uso
 
