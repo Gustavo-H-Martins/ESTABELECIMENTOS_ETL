@@ -9,6 +9,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - Adicionado [`changelog.md`](changelog.md)
   - [![Static Badge](https://img.shields.io/badge/e9f5bd5-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/e9f5bd509a7a0410fc33f0025058d65fbce9ba10)
   - [![Static Badge](https://img.shields.io/badge/567dd06-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/567dd0670cc9566c2ebeb01f0e4ece6d39ca3c59)
+  - [![Static Badge](https://img.shields.io/badge/5684c02-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/5684c02964ede264644a3a2e28671d999c5e03be)
 
 ## [0.1.0.Beta] - 2023-07-11 [![Static Badge](https://img.shields.io/badge/Release-0.0.1-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/47f0ea09d5e8105079948ee3e8cba41f0602f890)
 
