@@ -5,26 +5,35 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-const dbFile =  `${__dirname}`.replace('config', 'files/database.db')
+const dbFile = `${__dirname}`.replace('config', 'files/database.db')
 // Configuração do servidor
 // const dbFile = require('./variaveisAmbiente')
 // Conectar ao banco de dados SQLite3
 const db = new sqlite3.Database(dbFile, (err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    console.log('conectado no banco de dados.');
-    db.exec(`
+  if (err) {
+    console.error(err.message);
+  }
+  console.log('conectado no banco de dados.');
+  db.exec(`
+    /* CRIANDO ÍNDICES PARA AS TABELAS QUE VÃO CRIAR AS VIEWS */
     CREATE INDEX IF NOT EXISTS idx_tb_rfb_local ON tb_rfb (RAZAO_SOCIAL, CIDADE, BAIRRO);
     CREATE INDEX IF NOT EXISTS idx_tb_rfb_cnpj ON tb_rfb (CNPJ);
+    CREATE INDEX IF NOT EXISTS idx_tb_rfb_uf ON tb_rfb (UF);
+    CREATE INDEX IF NOT EXISTS idx_tb_rfb_cidade ON tb_rfb (CIDADE);
+    CREATE INDEX IF NOT EXISTS idx_tb_rfb_bairro ON tb_rfb (BAIRRO);
+
     CREATE INDEX IF NOT EXISTS idx_tb_alelo ON tb_alelo (RAZAO_SOCIAL, CIDADE, BAIRRO);
+    CREATE INDEX IF NOT EXISTS idx_tb_alelo_bandeira ON tb_alelo (BANDEIRA);
     CREATE INDEX IF NOT EXISTS idx_tb_benvisavale ON tb_benvisavale (RAZAO_SOCIAL, CIDADE, BAIRRO);
+    CREATE INDEX IF NOT EXISTS idx_tb_benvisavale_bandeira ON tb_benvisavale (BANDEIRA);
+    CREATE INDEX IF NOT EXISTS idx_tb_sodexo_bandeira ON tb_sodexo (BANDEIRA);
     CREATE INDEX IF NOT EXISTS idx_tb_sodexo ON tb_sodexo (RAZAO_SOCIAL, CIDADE, BAIRRO);
+    CREATE INDEX IF NOT EXISTS idx_tb_ticket_bandeira ON tb_ticket (BANDEIRA);
     CREATE INDEX IF NOT EXISTS idx_tb_ticket ON tb_ticket (CNPJ);
     CREATE INDEX IF NOT EXISTS idx_tb_vr ON tb_vr (CNPJ);
-    CREATE INDEX IF NOT EXISTS idx_tb_siga ON tb_siga (CNPJ);
+    CREATE INDEX IF NOT EXISTS idx_tb_vr_bandeira ON tb_vr (BANDEIRA);
     
-    CREATE TEMP VIEW  TICKET AS
+    CREATE VIEW IF NOT EXISTS  TICKET AS
         SELECT 
             RFB.CNPJ AS CNPJ,
             RFB.RAZAO_SOCIAL AS RAZAO_SOCIAL_RFB,
@@ -88,7 +97,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         LEFT JOIN tb_benvisavale B ON B.RAZAO_SOCIAL = RFB.RAZAO_SOCIAL  AND B.BAIRRO = RFB.BAIRRO AND B.CIDADE = RFB.CIDADE
         LEFT JOIN tb_siga S ON S.CNPJ = RFB.CNPJ;
         
-    CREATE TEMP VIEW  ALELO AS
+    CREATE VIEW IF NOT EXISTS  ALELO AS
         SELECT 
             RFB.CNPJ AS CNPJ,
             RFB.RAZAO_SOCIAL AS RAZAO_SOCIAL_RFB,
@@ -152,7 +161,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         LEFT JOIN tb_benvisavale B ON B.RAZAO_SOCIAL = RFB.RAZAO_SOCIAL  AND B.BAIRRO = RFB.BAIRRO AND B.CIDADE = RFB.CIDADE
         LEFT JOIN tb_siga S ON S.CNPJ = RFB.CNPJ;
         
-    CREATE TEMP VIEW  VR AS
+    CREATE VIEW IF NOT EXISTS  VR AS
         SELECT 
             RFB.CNPJ AS CNPJ,
             RFB.RAZAO_SOCIAL AS RAZAO_SOCIAL_RFB,
@@ -216,7 +225,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         LEFT JOIN tb_benvisavale B ON B.RAZAO_SOCIAL = RFB.RAZAO_SOCIAL  AND B.BAIRRO = RFB.BAIRRO AND B.CIDADE = RFB.CIDADE
         LEFT JOIN tb_siga S ON S.CNPJ = RFB.CNPJ;
         
-    CREATE TEMP VIEW  SODEXO AS
+    CREATE VIEW IF NOT EXISTS  SODEXO AS
         SELECT 
             RFB.CNPJ AS CNPJ,
             RFB.RAZAO_SOCIAL AS RAZAO_SOCIAL_RFB,
@@ -280,7 +289,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         LEFT JOIN tb_benvisavale B ON B.RAZAO_SOCIAL = RFB.RAZAO_SOCIAL  AND B.BAIRRO = RFB.BAIRRO AND B.CIDADE = RFB.CIDADE
         LEFT JOIN tb_siga S ON S.CNPJ = RFB.CNPJ;
         
-    CREATE TEMP VIEW  BENVISAVALE AS
+    CREATE VIEW IF NOT EXISTS  BENVISAVALE AS
         SELECT 
             RFB.CNPJ AS CNPJ,
             RFB.RAZAO_SOCIAL AS RAZAO_SOCIAL_RFB,
@@ -344,7 +353,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         LEFT JOIN  tb_sodexo SO ON SO.RAZAO_SOCIAL = RFB.RAZAO_SOCIAL AND SO.BAIRRO = RFB.BAIRRO AND SO.CIDADE = RFB.CIDADE  
         LEFT JOIN tb_siga S ON S.CNPJ = RFB.CNPJ;
         
-    CREATE TEMP VIEW  RECEITA AS
+    CREATE VIEW IF NOT EXISTS  RECEITA AS
         SELECT 
             RFB.CNPJ AS CNPJ,
             RFB.RAZAO_SOCIAL AS RAZAO_SOCIAL_RFB,
@@ -408,13 +417,14 @@ const db = new sqlite3.Database(dbFile, (err) => {
         LEFT JOIN  tb_sodexo SO ON SO.RAZAO_SOCIAL = RFB.RAZAO_SOCIAL AND SO.BAIRRO = RFB.BAIRRO AND SO.CIDADE = RFB.CIDADE  
         LEFT JOIN tb_siga S ON S.CNPJ = RFB.CNPJ
         LEFT JOIN tb_municipios M ON M.CIDADE = RFB.CIDADE AND M.UF = RFB.UF AND M.BAIRRO = RFB.BAIRRO;
-    `, function (err) {
-      if (err) {
-        console.error(err.message)
-      } else {
-        console.log("Views criadas com sucesso!")
-      }
-    });
+        VACUUM;
+    `, function(err) {
+    if (err) {
+      console.error(err.message)
+    } else {
+      console.log("Views criadas com sucesso!")
+    }
+  });
 });
 
 module.exports = db;
