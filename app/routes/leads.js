@@ -224,7 +224,7 @@ router.route("/estabelecimentos")
     if (bairros) conditions.push(`BAIRRO IN ${bairroTuple}`);
     if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
     // Validação dos parâmetros das bandeiras
-    if (bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
+    if (bandeira !== null && bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
     if (bandeiraTuple) likeClause = bandeiraTuple ? generateLikeClause('BANDEIRAS', bandeiraTuple, conditions.join(' AND ')) : null;
     if (bandeira) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
     if (conditions.length > 0 && bandeira === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
@@ -311,7 +311,7 @@ router.route("/estabelecimentos/counts")
     if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
 
     // Validação dos parâmetros das bandeiras
-    if (bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
+    if (bandeira !== null && bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
     if (bandeiraTuple) likeClause = bandeiraTuple ? generateLikeClause('BANDEIRAS', bandeiraTuple, conditions.join(' AND ')) : null;
     if (bandeira) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
     if (conditions.length > 0 && bandeira === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
@@ -435,7 +435,7 @@ router.route('/estabelecimentos/cidades')
     if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
 
     // Validação dos parâmetros das bandeiras
-    if (bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
+    if (bandeira !== null && bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
     if (bandeiraTuple) likeClause = bandeiraTuple ? generateLikeClause('BANDEIRAS', bandeiraTuple, conditions.join(' AND ')) : null;
     if (bandeira) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
     if (conditions.length > 0 && bandeira === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);

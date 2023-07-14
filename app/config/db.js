@@ -417,7 +417,6 @@ const db = new sqlite3.Database(dbFile, (err) => {
         LEFT JOIN  tb_sodexo SO ON SO.RAZAO_SOCIAL = RFB.RAZAO_SOCIAL AND SO.BAIRRO = RFB.BAIRRO AND SO.CIDADE = RFB.CIDADE  
         LEFT JOIN tb_siga S ON S.CNPJ = RFB.CNPJ
         LEFT JOIN tb_municipios M ON M.CIDADE = RFB.CIDADE AND M.UF = RFB.UF AND M.BAIRRO = RFB.BAIRRO;
-        VACUUM;
     `, function(err) {
     if (err) {
       console.error(err.message)
