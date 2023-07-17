@@ -7,6 +7,8 @@ const logToDatabase = require('../config/log')
 const router = require('express').Router();
 const ExcelJS = require('exceljs');
 const {Parser} = require('json2csv');
+const { salvaCache, lerCache } = require('./cache');
+
 /**
  * Funções de apoio
  */
@@ -279,73 +281,78 @@ router.route("/estabelecimentos")
 // GetAll-contagem
 router.route("/estabelecimentos/counts")
   .get(function(req, res, next) {
-    const clientIp = req.ip;
-    const cnpj = req.query.cnpj ? [req.query.cnpj.toUpperCase()] : null;
-    //const bandeira = req.query.bandeira ? [req.query.bandeira.toLowerCase()] : null;
-    // INCLUSÃO DA VALIDAÇÃO DE ENTRADA DE BANDEIRAS
-    const bandeira = req.query.bandeira ? req.query.bandeira.split(",") : null;
-    const bandeiraTuple = bandeira ? bandeira.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
+    const reqParams = JSON.stringify(req.query);
+    lerCache(reqParams)
+      .then(rows => {
+        if (rows !== null) {
+          // Se o cache existir e os parâmetros forem os mesmos, retorna os dados em cache
+          return res.json(rows);
+        } else {
+          const clientIp = req.ip;
+          const cnpj = req.query.cnpj ? [req.query.cnpj.toUpperCase()] : null;
+          //const bandeira = req.query.bandeira ? [req.query.bandeira.toLowerCase()] : null;
+          // INCLUSÃO DA VALIDAÇÃO DE ENTRADA DE BANDEIRAS
+          const bandeira = req.query.bandeira ? req.query.bandeira.split(",") : null;
+          const bandeiraTuple = bandeira ? bandeira.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
 
-    const associados = req.query.associados ? req.query.associados.split(",") : null;
-    const associadosTuple = associados ? `(${associados.map((valor) => `"${valor.toUpperCase()}"`).join(",")})` : null;
-    const souabrasel = req.query.souabrasel ? req.query.souabrasel.split(",") : null;
-    const souabraselTuple = souabrasel ? `(${souabrasel.map((valor) => `"${valor.toUpperCase()}"`).join(",")})` : null;
-    const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
-    const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
-    const bairros = req.query.bairro ? req.query.bairro.split(",") : null;
-    const bairroTuple = bairros ? `(${bairros.map((valor) => `"${valor.toUpperCase().replace(/-/g, ' ')}"`).join(",")})` : null;
-    const groupby = req.query.groupby ? req.query.groupby.toLocaleUpperCase().split(",") : null;
-    const orderby = req.query.orderby ? [req.query.orderby.toLocaleUpperCase()] : "DESC";
-    let query = `
-                  SELECT DISTINCT COUNT(*) AS TOTAL FROM RECEITA
-                  --
-                  /**/
-                  ;
-                  `;
-    let conditions = [];
-    if (associados) conditions.push(`ASSOCIADO IN ${associadosTuple}`);
-    if (souabrasel) conditions.push(`SOU_ABRASEL IN ${souabraselTuple}`)
-    if (uf) conditions.push(`UF = "${uf}"`);
-    if (cidade) conditions.push(`CIDADE = "${cidade}"`);
-    if (bairros) conditions.push(`BAIRRO IN ${bairroTuple}`);
-    if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
+          const associados = req.query.associados ? req.query.associados.split(",") : null;
+          const associadosTuple = associados ? `(${associados.map((valor) => `"${valor.toUpperCase()}"`).join(",")})` : null;
+          const souabrasel = req.query.souabrasel ? req.query.souabrasel.split(",") : null;
+          const souabraselTuple = souabrasel ? `(${souabrasel.map((valor) => `"${valor.toUpperCase()}"`).join(",")})` : null;
+          const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
+          const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
+          const bairros = req.query.bairro ? req.query.bairro.split(",") : null;
+          const bairroTuple = bairros ? `(${bairros.map((valor) => `"${valor.toUpperCase().replace(/-/g, ' ')}"`).join(",")})` : null;
+          const groupby = req.query.groupby ? req.query.groupby.toLocaleUpperCase().split(",") : null;
+          const orderby = req.query.orderby ? [req.query.orderby.toLocaleUpperCase()] : "DESC";
+          let query = `
+            SELECT DISTINCT COUNT(*) AS TOTAL FROM RECEITA
+            --
+            /**/
+            ;
+          `;
+          let conditions = [];
+          if (associados) conditions.push(`ASSOCIADO IN ${associadosTuple}`);
+          if (souabrasel) conditions.push(`SOU_ABRASEL IN ${souabraselTuple}`)
+          if (uf) conditions.push(`UF = "${uf}"`);
+          if (cidade) conditions.push(`CIDADE = "${cidade}"`);
+          if (bairros) conditions.push(`BAIRRO IN ${bairroTuple}`);
+          if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
 
-    // Validação dos parâmetros das bandeiras
-    if (bandeira !== null && bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
-    if (bandeiraTuple) likeClause = bandeiraTuple ? generateLikeClause('BANDEIRAS', bandeiraTuple, conditions.join(' AND ')) : null;
-    if (bandeira) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
-    if (conditions.length > 0 && bandeira === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
+          // Validação dos parâmetros das bandeiras
+          if (bandeira !== null && bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
+          if (bandeiraTuple) likeClause = bandeiraTuple ? generateLikeClause('BANDEIRAS', bandeiraTuple, conditions.join(' AND ')) : null;
+          if (bandeira) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
+          if (conditions.length > 0 && bandeira === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
 
-    if (groupby) query = query.replace(/\/\*\*\//g, ` GROUP BY ${groupby}`);
-    if (groupby) query = query.replace(/COUNT\(\*\)/g, `${groupby}, COUNT(*)`);
-    if (orderby) query = query.replace(";", `ORDER BY TOTAL ${orderby} ;`);
-    if (associados == 0) query = query.replace(`ASSOCIADO IN ("0")`, `ASSOCIADO = 0`);
-    if (souabrasel == 0) query = query.replace(`SOU_ABRASEL IN ("0")`, `SOU_ABRASEL = 0`);
-    //console.log(query)
+          if (groupby) query = query.replace(/\/\*\*\//g, ` GROUP BY ${groupby}`);
+          if (groupby) query = query.replace(/COUNT\(\*\)/g, `${groupby}, COUNT(*)`);
+          if (orderby) query = query.replace(";", `ORDER BY TOTAL ${orderby} ;`);
+          if (associados == 0) query = query.replace(`ASSOCIADO IN ("0")`, `ASSOCIADO = 0`);
+          if (souabrasel == 0) query = query.replace(`SOU_ABRASEL IN ("0")`, `SOU_ABRASEL = 0`);
+          //console.log(query)
 
-    db.all(query, (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      // Testando a função com diferentes parâmetros
-      if (groupby) rows = agrupar(rows, groupby);
-      //console.log(rows)
-      /*
-      //console.log(query)
-      // Formatando data e hora para incluir no log
-      const date = new Date()
-      const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // formata a data como DD/MM/AAAA
-      const formattedTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`; // formata a hora como HH:MM:SS
-      dataChamada = `Data: ${formattedDate} - Hora: ${formattedTime}`
-      logToDatabase(clientIp, `Retornando ${rows.length} dados de "${bandeira}" no estado de "${uf}" cidade de ${cidade}`, 'INFO', dataChamada)
-      */
-      res.status(200).json(
-        rows
-      );
-    });
-  })
+          db.all(query, (err, rows) => {
+            if (err) {
+              res.status(500).json({ error: err.message });
+              return;
+            }
+            // Testando a função com diferentes parâmetros
+            if (groupby) rows = agrupar(rows, groupby);
 
+            // Salve os dados no cache
+            salvaCache(reqParams, rows);
+
+            //console.log(rows)
+            res.status(200).json(rows);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao ler cache:', error);
+        res.status(500).json({ error: 'Erro ao ler cache.' });
+      });
+  });
 // GET BAIRROS 
 router.route('/estabelecimentos/bairros') 
     .get(async function(req, res, next) { 
