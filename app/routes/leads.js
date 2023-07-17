@@ -347,12 +347,12 @@ router.route("/estabelecimentos/counts")
             res.status(200).json(rows);
           });
         }
-      })
-      .catch(error => {
+      }
+    ).catch(error => {
         console.error('Erro ao ler cache:', error);
         res.status(500).json({ error: 'Erro ao ler cache.' });
-      });
   });
+});
 // GET BAIRROS 
 router.route('/estabelecimentos/bairros') 
     .get(async function(req, res, next) { 
