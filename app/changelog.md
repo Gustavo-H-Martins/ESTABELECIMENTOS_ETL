@@ -2,6 +2,20 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+
+
+## [0.1.2.Beta] - 2023-07-14 - 2023-07-17 [![Static Badge](https://img.shields.io/badge/Release-0.0.2-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/c3767f08fbded7d823a3ba5f2c260c53824c2b71)
+
+### Adicionado
+
+- Adicionado índices `bairro`, `cidade`, `uf` em `tb_rfb`
+  - [![Static Badge](https://img.shields.io/badge/e9f5bd5-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/c3767f08fbded7d823a3ba5f2c260c53824c2b71)
+
+- Adicionado o script de `leitura` e `registro` de _`cache`_
+  - [![Static Badge](https://img.shields.io/badge/c3bd657-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/c3bd657f76218eb784a8d6d7f489ebbd026d19a1)
+  - [![Static Badge](https://img.shields.io/badge/5b630f5-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/5b630f5478b4151ef389000b2cda660e089be793)
+  - [![Static Badge](https://img.shields.io/badge/116533a-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/116533a5ebf5faabf492a23724bfba0059d47eea)
+
 ## [0.1.1.Beta] - 2023-07-11 [![Static Badge](https://img.shields.io/badge/Release-0.0.1-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/e9f5bd509a7a0410fc33f0025058d65fbce9ba10)
 
 ### Adicionado
