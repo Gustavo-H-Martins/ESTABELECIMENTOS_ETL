@@ -1,21 +1,9 @@
-### OBTENDO CAMINHOS ABSOLUTOS E RELATIVOS EM PYTHON
-``` PYTHON
-    import os
-    # Obter o caminho absoluto do arquivo em execução
-    file_path = os.path.abspath(__file__)
+[![Static Badge](https://img.shields.io/badge/DESENVOLVIMENTO_-0.1.2.B-red)]()  [![Static Badge](https://img.shields.io/badge/PRODUCÃO_-0.1.2.B-green)]() [![Static Badge](https://img.shields.io/badge/HOMOLOGAÇÃO-0.1.2.B-yellow)]()
 
-    print(file_path)
 
-    # Obter o diretório do arquivo em execução
-    dir_path = os.path.dirname(file_path)
+[![Gustavo-H-Martins](https://github-readme-stats.vercel.app/api?username=Gustavo-H-Martins&show_icons=true&theme=radical)](https://github.com/Gustavo-H-Martins)
+## Licença
+Este projeto não tem licença de uso mais. Consulte o arquivo [LICENSE](./app/licence) para mais detalhes.
+## ☕ ChangeLog
 
-    print(dir_path)
-
-    # Obter o diretório do job
-    current_job = os.getcwd()
-
-    print(current_job)
-```
-
-### Download Docker Desktop Windows
-`https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe`
+Veja as versões [changelog](./app/changelog.md)
