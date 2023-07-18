@@ -21,6 +21,8 @@ const db = new sqlite3.Database(dbFile, (err) => {
     CREATE INDEX IF NOT EXISTS idx_tb_rfb_uf ON tb_rfb (UF);
     CREATE INDEX IF NOT EXISTS idx_tb_rfb_cidade ON tb_rfb (CIDADE);
     CREATE INDEX IF NOT EXISTS idx_tb_rfb_bairro ON tb_rfb (BAIRRO);
+    
+    CREATE INDEX IF NOT EXISTS idx_tb_cadastur_cnpj ON tb_cadastur (CNPJ);
 
     CREATE INDEX IF NOT EXISTS idx_tb_alelo ON tb_alelo (RAZAO_SOCIAL, CIDADE, BAIRRO);
     CREATE INDEX IF NOT EXISTS idx_tb_alelo_bandeira ON tb_alelo (BANDEIRA);
@@ -32,6 +34,42 @@ const db = new sqlite3.Database(dbFile, (err) => {
     CREATE INDEX IF NOT EXISTS idx_tb_ticket ON tb_ticket (CNPJ);
     CREATE INDEX IF NOT EXISTS idx_tb_vr ON tb_vr (CNPJ);
     CREATE INDEX IF NOT EXISTS idx_tb_vr_bandeira ON tb_vr (BANDEIRA);
+    
+    CREATE VIEW IF NOT EXISTS  CADASTUR AS
+        SELECT 
+            C.CNPJ_FORMATADO AS CNPJ,
+            C.RAZAO_SOCIAL AS RAZAO_SOCIAL,
+            C.NOME_FANTASIA AS NOME_FANTASIA,
+            C.CEP AS CEP,
+            C.ENDERECO AS ENDERECO,
+            C.BAIRRO AS BAIRRO,
+            C.CIDADE AS CIDADE,
+            C.UF AS UF,
+            C.TELEFONE AS TELEFONE,
+            RFB.TELEFONE AS TELEFONE_RFB,
+            RFB.EMAIL,
+            CASE
+                WHEN C.CNPJ THEN "CADASTUR"
+                ELSE False
+            END AS ORIGEM,
+            CASE 
+                WHEN S.CNPJ IS NULL THEN False 
+                ELSE True 
+            END AS BASE_SIGA,
+            CASE 
+                WHEN S.ASSOCIADO IS NULL THEN False
+                WHEN S.ASSOCIADO = 'ATIVO' THEN 'ATIVO'
+                WHEN S.ASSOCIADO = 'INATIVO' THEN 'INATIVO'
+            END AS ASSOCIADO,
+            CASE
+                WHEN S.SOU_ABRASEL IS NULL THEN False
+                WHEN S.SOU_ABRASEL = 'ATIVO' THEN 'ATIVO'
+                WHEN S.SOU_ABRASEL = 'INATIVO' THEN 'INATIVO'
+                WHEN S.SOU_ABRASEL = 'CANCELADO' THEN 'CANCELADO'
+            END AS SOU_ABRASEL
+        FROM tb_cadastur C
+        LEFT JOIN tb_rfb RFB ON C.CNPJ = RFB.CNPJ
+        LEFT JOIN tb_siga S ON S.CNPJ = C.CNPJ;
     
     CREATE VIEW IF NOT EXISTS  TICKET AS
         SELECT 
@@ -48,7 +86,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
             RFB.EMAIL,
             T.BANDEIRA || COALESCE(", " || V.BANDEIRA, ' ') 
             || COALESCE(", " || A.BANDEIRA, ' ') || COALESCE(", " 
-            || SO.BANDEIRA, ' ') ||COALESCE(", " || B.BANDEIRA, ' ') AS BANDEIRAS,
+            || SO.BANDEIRA, ' ') ||COALESCE(", " || B.BANDEIRA, ' ') AS ORIGEM,
             
             /*
             CASE 
@@ -112,7 +150,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
             RFB.EMAIL,
             A.BANDEIRA || COALESCE(", " || V.BANDEIRA, ' ') 
             || COALESCE(", " || T.BANDEIRA, ' ') || COALESCE(", " 
-            || SO.BANDEIRA, ' ') ||COALESCE(", " || B.BANDEIRA, ' ') AS BANDEIRAS,
+            || SO.BANDEIRA, ' ') ||COALESCE(", " || B.BANDEIRA, ' ') AS ORIGEM,
             
             /*
             CASE 
@@ -176,7 +214,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
             RFB.EMAIL,
             V.BANDEIRA || COALESCE(", " || T.BANDEIRA, ' ') 
             || COALESCE(", " || A.BANDEIRA, ' ') || COALESCE(", " 
-            || SO.BANDEIRA, ' ') ||COALESCE(", " || B.BANDEIRA, ' ') AS BANDEIRAS,
+            || SO.BANDEIRA, ' ') ||COALESCE(", " || B.BANDEIRA, ' ') AS ORIGEM,
             
             /*
             CASE 
@@ -240,7 +278,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
             RFB.EMAIL,
             SO.BANDEIRA || COALESCE(", " || T.BANDEIRA, ' ') 
             || COALESCE(", " || A.BANDEIRA, ' ') || COALESCE(", " 
-            || V.BANDEIRA, ' ') ||COALESCE(", " || B.BANDEIRA, ' ') AS BANDEIRAS,
+            || V.BANDEIRA, ' ') ||COALESCE(", " || B.BANDEIRA, ' ') AS ORIGEM,
             
             /*
             CASE 
@@ -304,7 +342,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
             RFB.EMAIL,
             B.BANDEIRA || COALESCE(", " || T.BANDEIRA, ' ') 
             || COALESCE(", " || A.BANDEIRA, ' ') || COALESCE(", " 
-            || V.BANDEIRA, ' ') ||COALESCE(", " || SO.BANDEIRA, ' ') AS BANDEIRAS,
+            || V.BANDEIRA, ' ') ||COALESCE(", " || SO.BANDEIRA, ' ') AS ORIGEM,
             
             /*
             CASE 
@@ -368,7 +406,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
             RFB.EMAIL,
             COALESCE(""|| COALESCE("" || B.BANDEIRA, ' ') || COALESCE(", " || T.BANDEIRA, ' ') 
             || COALESCE(", " || A.BANDEIRA, ' ') || COALESCE(", " 
-            || V.BANDEIRA, ' ') ||COALESCE(", " || SO.BANDEIRA, ' '), NULL) AS BANDEIRAS,
+            || V.BANDEIRA, ' ') ||COALESCE(", " || SO.BANDEIRA, ' '), NULL) AS ORIGEM,
             
             /*
             CASE 

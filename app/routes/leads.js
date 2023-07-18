@@ -122,7 +122,7 @@ const jsonToXlsx = async (data, cabecalho) => {
 };
 
 
-// INCLUSÃO DA FUNÇÃO DE VALIDAÇÃO DE ENTRADA DE BANDEIRAS
+// INCLUSÃO DA FUNÇÃO DE VALIDAÇÃO DE ENTRADA D ORIGEM
 function generateLikeClause(columnName, values, conditions) {
   const likeClauses = values.map((value) => `${columnName} LIKE "%${value}%" AND ${conditions}`);
   return likeClauses.join(' OR ');
@@ -132,15 +132,15 @@ function generateLikeClause(columnName, values, conditions) {
 function agrupar(array, groupby) {
   // Criando um objeto intermediário que acumula os valores por grupo
   let acumulador = array.reduce((objeto, atual) => {
-    // Verificando se o groupby contém a propriedade BANDEIRAS
-    if (groupby.includes("BANDEIRAS")) {
-      // Convertendo a string BANDEIRAS em um array de strings
-      let bandeiras = atual.BANDEIRAS.split(',').map(element => element.trim());
+    // Verificando se o groupby contém a propriedade ORIGEM
+    if (groupby.includes("ORIGEM")) {
+      // Convertendo a string ORIGEM em um array de strings
+      let origens = atual.ORIGEM.split(',').map(element => element.trim());
 
-      // Iterando sobre cada elemento do array de bandeiras
-      bandeiras.forEach(bandeira => {
-        // Criando uma chave composta pelas propriedades do groupby, substituindo a propriedade BANDEIRAS pelo valor da bandeira atual
-        let chave = groupby.map(prop => prop === "BANDEIRAS" ? bandeira : atual[prop]).join("|");
+      // Iterando sobre cada elemento do array de origem
+      origens.forEach(origem => {
+        // Criando uma chave composta pelas propriedades do groupby, substituindo a propriedade ORIGEM pelo valor da origem atual
+        let chave = groupby.map(prop => prop === "ORIGEM" ? origem : atual[prop]).join("|");
         // Se a chave não existir no objeto, iniciando com um objeto com as mesmas propriedades do atual, mas com TOTAL zero
         if (!objeto[chave]) {
           objeto[chave] = { ...atual, TOTAL: 0 };
@@ -148,7 +148,7 @@ function agrupar(array, groupby) {
         // Somando o valor ao objeto
         objeto[chave].TOTAL += atual.TOTAL;
       });
-    } //se groupby não tiver a propriedade BANDEIRAS 
+    } //se groupby não tiver a propriedade origens 
     else {
       // Criando uma chave composta pelas propriedades do groupby
       let chave = groupby.map(prop => atual[prop]).join("|");
@@ -199,9 +199,9 @@ router.route("/estabelecimentos")
     const souabraselTuple = souabrasel ? `(${souabrasel.map((valor) => `"${valor.toUpperCase()}"`).join(",")})` : null;
     //const bandeira = req.query.bandeira ? [req.query.bandeira.toLowerCase()] : null;
     // INCLUSÃO DA VALIDAÇÃO DE ENTRADA DE BANDEIRAS
-    const bandeira = req.query.bandeira ? req.query.bandeira.split(",") : null;
-    const bandeiraTuple = bandeira ? bandeira.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
-
+    const origem = req.query.origem ? req.query.origem.split(",") : null;
+    const origemTuple = origem ? origem.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
+    console.log(origem)
     const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
     const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
     const bairros = req.query.bairro ? req.query.bairro.split(",") : null;
@@ -225,11 +225,11 @@ router.route("/estabelecimentos")
     if (cidade) conditions.push(`CIDADE = "${cidade}"`);
     if (bairros) conditions.push(`BAIRRO IN ${bairroTuple}`);
     if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
-    // Validação dos parâmetros das bandeiras
-    if (bandeira !== null && bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
-    if (bandeiraTuple) likeClause = bandeiraTuple ? generateLikeClause('BANDEIRAS', bandeiraTuple, conditions.join(' AND ')) : null;
-    if (bandeira) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
-    if (conditions.length > 0 && bandeira === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
+    // Validação dos parâmetros das origens
+    if (origem !== null && origem.length === 1) query = query.replace('FROM RECEITA', `FROM ${origem}`);
+    if (origemTuple) likeClause = origemTuple ? generateLikeClause('ORIGEM', origemTuple, conditions.join(' AND ')) : null;
+    if (origem) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
+    if (conditions.length > 0 && origem === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
     if (associados == 0) query = query.replace(`ASSOCIADO IN ("0")`, `ASSOCIADO = 0`);
     if (souabrasel == 0) query = query.replace(`SOU_ABRASEL IN ("0")`, `SOU_ABRASEL = 0`);
     query += `LIMIT ? OFFSET ?;`;
@@ -241,9 +241,10 @@ router.route("/estabelecimentos")
       }
       // Transforma a string em um array e remove os espaços em branco
       rows = rows.map(row => {
-        row.BANDEIRAS = row.BANDEIRAS.split(',').map(element => element.trim());
+        row.ORIGEM = row.ORIGEM.split(',').map(element => element.trim());
         return row;
       });
+      console.log(query)
       /*
       // Formatando data e hora para incluir no log
       const date = new Date()
@@ -292,8 +293,8 @@ router.route("/estabelecimentos/counts")
           const cnpj = req.query.cnpj ? [req.query.cnpj.toUpperCase()] : null;
           //const bandeira = req.query.bandeira ? [req.query.bandeira.toLowerCase()] : null;
           // INCLUSÃO DA VALIDAÇÃO DE ENTRADA DE BANDEIRAS
-          const bandeira = req.query.bandeira ? req.query.bandeira.split(",") : null;
-          const bandeiraTuple = bandeira ? bandeira.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
+          const origem = req.query.origem ? req.query.origem.split(",") : null;
+          const origemTuple = origem ? origem.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
 
           const associados = req.query.associados ? req.query.associados.split(",") : null;
           const associadosTuple = associados ? `(${associados.map((valor) => `"${valor.toUpperCase()}"`).join(",")})` : null;
@@ -320,10 +321,10 @@ router.route("/estabelecimentos/counts")
           if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
 
           // Validação dos parâmetros das bandeiras
-          if (bandeira !== null && bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
-          if (bandeiraTuple) likeClause = bandeiraTuple ? generateLikeClause('BANDEIRAS', bandeiraTuple, conditions.join(' AND ')) : null;
-          if (bandeira) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
-          if (conditions.length > 0 && bandeira === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
+          if (origem !== null && origem.length === 1) query = query.replace('FROM RECEITA', `FROM ${origem}`);
+          if (origemTuple) likeClause = origemTuple ? generateLikeClause('ORIGEM', origemTuple, conditions.join(' AND ')) : null;
+          if (origem) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
+          if (conditions.length > 0 && origem === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
 
           if (groupby) query = query.replace(/\/\*\*\//g, ` GROUP BY ${groupby}`);
           if (groupby) query = query.replace(/COUNT\(\*\)/g, `${groupby}, COUNT(*)`);
@@ -359,8 +360,8 @@ router.route('/estabelecimentos/bairros')
     const clientIp = req.ip; 
     const cnpj = req.query.cnpj ? [req.query.cnpj.toUpperCase()] : null;
     // INCLUSÃO DA VALIDAÇÃO DE ENTRADA DE BANDEIRAS
-    const bandeira = req.query.bandeira ? req.query.bandeira.split(",") : null;
-    const bandeiraTuple = bandeira ? bandeira.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
+    const origem = req.query.origem ? req.query.origem.split(",") : null;
+    const origemTuple = origem ? origem.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
 
     const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
     const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
@@ -378,10 +379,10 @@ router.route('/estabelecimentos/bairros')
     if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
 
     // Validação dos parâmetros das bandeiras
-    if (bandeira !== null && bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
-    if (bandeiraTuple) likeClause = bandeiraTuple ? generateLikeClause('BANDEIRAS', bandeiraTuple, conditions.join(' AND ')) : null;
-    if (bandeira) query = query.replace(/--/g, ` WHERE ${likeClause}`);
-    if (conditions.length > 0 && bandeira === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
+    if (origem !== null && origem.length === 1) query = query.replace('FROM RECEITA', `FROM ${origem}`);
+    if (origemTuple) likeClause = origemTuple ? generateLikeClause('ORIGEM', origemTuple, conditions.join(' AND ')) : null;
+    if (origem) query = query.replace(/--/g, ` WHERE ${likeClause}`);
+    if (conditions.length > 0 && origem === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
 
     //console.log(query)
     db.all(query, async (err, rows) => {
@@ -395,7 +396,7 @@ router.route('/estabelecimentos/bairros')
       const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // formata a data como DD/MM/AAAA
       const formattedTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`; // formata a hora como HH:MM:SS
       dataChamada = `Data: ${formattedDate} - Hora: ${formattedTime}`
-      logToDatabase(clientIp, `Retornando ${rows.length} dados de "${bandeira}" no estado de "${uf}" cidade de ${cidade}`, 'INFO', dataChamada)
+      logToDatabase(clientIp, `Retornando ${rows.length} dados de "${origem}" no estado de "${uf}" cidade de ${cidade}`, 'INFO', dataChamada)
 
     // Obter o formato desejado do parâmetro format
     const formato = req.query.formato ? req.query.formato.toLowerCase(): null;
@@ -425,8 +426,8 @@ router.route('/estabelecimentos/cidades')
     const cnpj = req.query.cnpj ? [req.query.cnpj.toUpperCase()] : null;
     //const bandeira = req.query.bandeira ? [req.query.bandeira.toLowerCase()] : null;
     // INCLUSÃO DA VALIDAÇÃO DE ENTRADA DE BANDEIRAS
-    const bandeira = req.query.bandeira ? req.query.bandeira.split(",") : null;
-    const bandeiraTuple = bandeira ? bandeira.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
+    const origem = req.query.origem ? req.query.origem.split(",") : null;
+    const origemTuple = origem ? origem.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
 
     const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
     const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
@@ -442,10 +443,10 @@ router.route('/estabelecimentos/cidades')
     if (cnpj === null) conditions.push(`CNPJ IS NOT NULL`);
 
     // Validação dos parâmetros das bandeiras
-    if (bandeira !== null && bandeira.length === 1) query = query.replace('FROM RECEITA', `FROM ${bandeira}`);
-    if (bandeiraTuple) likeClause = bandeiraTuple ? generateLikeClause('BANDEIRAS', bandeiraTuple, conditions.join(' AND ')) : null;
-    if (bandeira) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
-    if (conditions.length > 0 && bandeira === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
+    if (origem !== null && origem.length === 1) query = query.replace('FROM RECEITA', `FROM ${origem}`);
+    if (origemTuple) likeClause = origemTuple ? generateLikeClause('ORIGEM', origemTuple, conditions.join(' AND ')) : null;
+    if (origem) query = query.replace(/--/g, ` WHERE ${likeClause}`);;
+    if (conditions.length > 0 && origem === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
 
 
     db.all(query, (err, rows) => {
@@ -459,7 +460,7 @@ router.route('/estabelecimentos/cidades')
       const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // formata a data como DD/MM/AAAA
       const formattedTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`; // formata a hora como HH:MM:SS
       dataChamada = `Data: ${formattedDate} - Hora: ${formattedTime}`
-      logToDatabase(clientIp, `Retornando ${rows.length} dados de "${bandeira}" no estado de "${uf}" cidade de ${cidade}`, 'INFO', dataChamada)
+      logToDatabase(clientIp, `Retornando ${rows.length} dados de "${origem}" no estado de "${uf}" cidade de ${cidade}`, 'INFO', dataChamada)
       res.status(200).json(
         rows
       );
