@@ -1,4 +1,15 @@
+import os
 import requests
+from dotenv import load_dotenv
+
+# carrega as variáveis de ambientes no script
+load_dotenv(".env")
+
+# carrega a variável de ambiente no script
+URL_ALELO = os.getenv("URL_ALELO")
+ORIGIN_ALELO = os.getenv("ORIGIN_ALELO")
+URL_ALELO_TOKEN = os.getenv("URL_ALELO_TOKEN")
+
 def post_establishments(longitude:str ='-46.6395571', latitude:str= '-23.5557714', raio:str = '10', page:str = '1', pageSize:str = '10000', product:str = '100'):
     """resumo para função get_establishments
 
@@ -13,12 +24,12 @@ def post_establishments(longitude:str ='-46.6395571', latitude:str= '-23.5557714
     Returns:
         json: retorna um json com dados de estabelecimentos da base da provedora de cartão voucher Alelo
     """
-    url = f"https://api.alelo.com.br/alelo/prd/acceptance-network/establishments?longitude={longitude}&latitude={latitude}&distance={raio}&pageNumber={page}&pageSize={pageSize}&type=POSITION&product={product}"
+    url = f"{URL_ALELO}&latitude={latitude}&distance={raio}&pageNumber={page}&pageSize={pageSize}&type=POSITION&product={product}"
 
     payload={}
     headers = {
-        'Origin': 'https://redeaceitacao.alelo.com.br',
-        'Referer': 'https://redeaceitacao.alelo.com.br/',
+        'Origin': ORIGIN_ALELO,
+        'Referer': f'{ORIGIN_ALELO}/',
     }
 
     response = requests.options(url, headers=headers, data=payload)
@@ -39,14 +50,14 @@ def get_establishments(token:str ,longitude:str ='-46.6395571', latitude:str= '-
     Returns:
         json: retorna um json com dados de estabelecimentos da base da provedora de cartão voucher Alelo
     """
-    url = f"https://api.alelo.com.br/alelo/prd/acceptance-network/establishments?longitude={longitude}&latitude={latitude}&distance={raio}&pageNumber={page}&pageSize={pageSize}&type=POSITION&product={product}"
+    url = f"{URL_ALELO}?longitude={longitude}&latitude={latitude}&distance={raio}&pageNumber={page}&pageSize={pageSize}&type=POSITION&product={product}"
 
     payload={}
     headers = {
         'Accept': 'application/json, text/plain, */*',
         'Authorization': f'Bearer {token}',
-        'Origin': 'https://redeaceitacao.alelo.com.br',
-        'Referer': 'https://redeaceitacao.alelo.com.br/',
+        'Origin': ORIGIN_ALELO,
+        'Referer': f'{ORIGIN_ALELO}/',
         'x-ibm-client-id': '76a775cd-8b2c-4ce8-b7a5-b321c66223f7'
     }
 
@@ -73,13 +84,13 @@ def get_establishments(token:str ,longitude:str ='-46.6395571', latitude:str= '-
     return base
 
 def get_token():
-    url = "https://api.alelo.com.br/alelo/prd/cardholders/oauth2/token"
+    url = URL_ALELO_TOKEN
 
     payload='grant_type=client_credentials&client_id=76a775cd-8b2c-4ce8-b7a5-b321c66223f7&client_secret=V2jC1qG2dN2nQ2sK3gE7hR0tI1oO3yT4oF0tA3iI5qK8gD7fX7&scope=acceptance-network'
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Origin': 'https://redeaceitacao.alelo.com.br',
-        'Referer': 'https://redeaceitacao.alelo.com.br/',
+        'Origin': ORIGIN_ALELO,
+        'Referer': f'{ORIGIN_ALELO}/',
 }
 
     response = requests.post(url, headers=headers, data=payload)

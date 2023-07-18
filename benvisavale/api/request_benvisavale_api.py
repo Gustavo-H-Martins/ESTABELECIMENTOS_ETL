@@ -8,6 +8,8 @@ load_dotenv(".env")
 # carrega a variável de ambiente no script
 CODE_BENVISAVALE = os.getenv('CODE_BENVISAVALE')
 URL_BENVISAVALE = os.getenv("URL_BENVISAVALE")
+ORIGIN_BENVISAVALE = os.getenv("ORIGIN_BENVISAVALE")
+
 def get_estabelecimentos(latitude:str = "-23.5673865", longitude:str = "-46.5703831821127", raio:float = 5):
     """Resumo para a função get_estabelecimentos
 
@@ -32,8 +34,8 @@ def get_estabelecimentos(latitude:str = "-23.5673865", longitude:str = "-46.5703
 
     headers = {
         "Content-type": "application/json; charset=UTF-8",
-        "Origin": "https://bensite.conductor.com.br",
-        "Referer": "https://bensite.conductor.com.br/",
+        "Origin": ORIGIN_BENVISAVALE,
+        "Referer": f"{ORIGIN_BENVISAVALE}/",
     }
 
     response = requests.post(url, headers=headers, json=payload)
