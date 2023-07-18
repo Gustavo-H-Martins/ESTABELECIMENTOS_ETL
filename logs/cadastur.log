@@ -2,3 +2,9 @@
 2023-07-18 14:54:03,076 - DEBUG - https://cadastur.turismo.gov.br:443 "POST /cadastur-backend/rest/portal/obterDadosPrestadores HTTP/1.1" 200 None
 2023-07-18 15:14:27,792 - DEBUG - Starting new HTTPS connection (1): cadastur.turismo.gov.br:443
 2023-07-18 15:14:37,125 - DEBUG - https://cadastur.turismo.gov.br:443 "POST /cadastur-backend/rest/portal/obterDadosPrestadores HTTP/1.1" 200 None
+2023-07-18 16:31:58,519 - DEBUG - Starting new HTTPS connection (1): cadastur.turismo.gov.br:443
+2023-07-18 16:32:07,748 - DEBUG - https://cadastur.turismo.gov.br:443 "POST /cadastur-backend/rest/portal/obterDadosPrestadores HTTP/1.1" 200 None
+2023-07-18 16:41:50,102 - DEBUG - Starting new HTTPS connection (1): cadastur.turismo.gov.br:443
+2023-07-18 16:41:59,103 - DEBUG - https://cadastur.turismo.gov.br:443 "POST /cadastur-backend/rest/portal/obterDadosPrestadores HTTP/1.1" 200 None
+2023-07-18 16:43:16,899 - DEBUG - Starting new HTTPS connection (1): cadastur.turismo.gov.br:443
+2023-07-18 16:43:26,166 - DEBUG - https://cadastur.turismo.gov.br:443 "POST /cadastur-backend/rest/portal/obterDadosPrestadores HTTP/1.1" 200 None

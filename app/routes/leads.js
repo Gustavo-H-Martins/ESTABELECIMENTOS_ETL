@@ -201,7 +201,7 @@ router.route("/estabelecimentos")
     // INCLUSÃO DA VALIDAÇÃO DE ENTRADA DE BANDEIRAS
     const origem = req.query.origem ? req.query.origem.split(",") : null;
     const origemTuple = origem ? origem.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
-    console.log(origem)
+
     const uf = req.query.uf ? [req.query.uf.toUpperCase()] : null;
     const cidade = req.query.cidade ? [req.query.cidade.toUpperCase().replace(/-/g, ' ')] : null;
     const bairros = req.query.bairro ? req.query.bairro.split(",") : null;

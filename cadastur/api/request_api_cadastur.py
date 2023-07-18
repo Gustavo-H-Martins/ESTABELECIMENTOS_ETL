@@ -2,6 +2,7 @@ import os
 import requests
 from datetime import datetime
 from dotenv import load_dotenv
+from unidecode import unidecode
 
 # carrega as variáveis de ambientes no script
 load_dotenv(".env")
@@ -23,17 +24,18 @@ def formata_data(int_data:int):
     if int_data:
         parse_data = datetime.fromtimestamp(int_data / 1e3)
         format_data = parse_data.strftime("%d-%m-%Y")
+        return format_data
     else:
-        format_data = int_data
-    return format_data
+        return int_data
+    
 
 def formata_telefone(telefone):
     """Retorna o telefone Formatado no formato Brasileiro"""
     telefone = str(telefone)
     if len(telefone) == 10:
-        return f"({telefone[:2]}) {telefone[2:6]}-{telefone[6:]}"
+        return f"{telefone[:2]} {telefone[2:6]}-{telefone[6:]}"
     elif len(telefone) == 11:
-        return f"({telefone[:2]}) {telefone[2:7]}-{telefone[7:]}"
+        return f"{telefone[:2]} {telefone[2:7]}-{telefone[7:]}"
     else:
         return telefone
 
@@ -46,11 +48,18 @@ def formata_url_prestador(id):
         url = id
     return url
 
+def formata_bairro_e_cidade(bairro_cidade):
+    if bairro_cidade:
+        bairro_cidade = str(bairro_cidade).upper()
+        bairro_cidade = unidecode(bairro_cidade)
+    return bairro_cidade
+
 def get_cadastur(page:int=1, page_size:int=30000, campo_ordenacao:str="noBairro", 
                  orderby:str="ASC", prestador:str="", cod_local:int=None, 
                  atividade_turistica:str="Restaurante, Cafeteria, Bar e Similares",
                  sou_prestador:bool=False, sou_turista:bool=True, cidade_uf:str="Lagoa Santa, MG",
                  id_uf:int=None, possui_veiculo:str=""):
+
     """
     Filtros:
 
@@ -111,8 +120,8 @@ def get_cadastur(page:int=1, page_size:int=30000, campo_ordenacao:str="noBairro"
             "TELEFONE": formata_telefone(d.get("nuTelefone", "")),
             "CEP": d.get("nuCep", ""),
             "ENDERECO": str(d.get("noLogradouro", "")).capitalize() + ", " + str(d.get("complemento","")).capitalize(),
-            "BAIRRO": d.get("noBairro",""),
-            "CIDADE" : str(d.get("municipio", "")).capitalize(),
+            "BAIRRO": formata_bairro_e_cidade(d.get("noBairro","")),
+            "CIDADE" : formata_bairro_e_cidade(d.get("municipio", "")),
             "UF": d.get("sguf", ""),
             "ATIVIDADE": str(d.get("atividade","")).capitalize(),
             "COD_SITUACAO_CADASTRAL": d.get("nuSituacaoCadastral", ""),
