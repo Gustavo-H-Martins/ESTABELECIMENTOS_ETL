@@ -9,7 +9,7 @@ load_dotenv(env)
 
 # carrega a variável da chave de api no script
 API_KEY_LEADS_SIGA = os.getenv("API_KEY_LEADS_SIGA")
-
+URL_SIGA = os.getenv("URL_SIGA")
 def get_siga(chave:str = API_KEY_LEADS_SIGA):
     import requests
     #Conexão com api siga.
@@ -17,7 +17,7 @@ def get_siga(chave:str = API_KEY_LEADS_SIGA):
         "chave_abrasel":chave,
         "accept" : "*",
         }
-    response = requests.get("https://siga.abrasel.com.br/tools/wsv/associados.jwsv",headers=params)
+    response = requests.get(URL_SIGA,headers=params)
     data = response.json()
     base = []
     for d in data:

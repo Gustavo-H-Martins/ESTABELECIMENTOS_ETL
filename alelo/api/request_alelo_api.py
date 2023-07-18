@@ -1,3 +1,4 @@
+import requests
 def post_establishments(longitude:str ='-46.6395571', latitude:str= '-23.5557714', raio:str = '10', page:str = '1', pageSize:str = '10000', product:str = '100'):
     """resumo para função get_establishments
 
@@ -12,29 +13,15 @@ def post_establishments(longitude:str ='-46.6395571', latitude:str= '-23.5557714
     Returns:
         json: retorna um json com dados de estabelecimentos da base da provedora de cartão voucher Alelo
     """
-    import requests
-
     url = f"https://api.alelo.com.br/alelo/prd/acceptance-network/establishments?longitude={longitude}&latitude={latitude}&distance={raio}&pageNumber={page}&pageSize={pageSize}&type=POSITION&product={product}"
 
     payload={}
     headers = {
-    'Accept': '*/*',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-    'Access-Control-Request-Headers': 'authorization,x-ibm-client-id',
-    'Access-Control-Request-Method': 'GET',
-    'Connection': 'keep-alive',
-    'Host': 'api.alelo.com.br',
-    'Origin': 'https://redeaceitacao.alelo.com.br',
-    'Referer': 'https://redeaceitacao.alelo.com.br/',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-site',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-    'Cookie': 'dtCookie=v_4_srv_3_sn_9BC5D4CCED2DEE026B6B076E754DC9C9_perc_100000_ol_0_mul_1_app-3Aea7c4b59f27d43eb_0; a7e2b1664582e63453352cdc14747b5e=149fc99cb62a2dfda246e6f3fc75b1f0; b4a8c8bd365a01af1ce16d38b368df35=320400dd5f58d59b1432b4a3d1135c04'
+        'Origin': 'https://redeaceitacao.alelo.com.br',
+        'Referer': 'https://redeaceitacao.alelo.com.br/',
     }
 
-    response = requests.request("OPTIONS", url, headers=headers, data=payload)
+    response = requests.options(url, headers=headers, data=payload)
 
     print(response.text)
 
@@ -52,31 +39,18 @@ def get_establishments(token:str ,longitude:str ='-46.6395571', latitude:str= '-
     Returns:
         json: retorna um json com dados de estabelecimentos da base da provedora de cartão voucher Alelo
     """
-    import requests
     url = f"https://api.alelo.com.br/alelo/prd/acceptance-network/establishments?longitude={longitude}&latitude={latitude}&distance={raio}&pageNumber={page}&pageSize={pageSize}&type=POSITION&product={product}"
 
     payload={}
     headers = {
-    'Accept': 'application/json, text/plain, */*',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-    'Authorization': f'Bearer {token}',
-    'Connection': 'keep-alive',
-    'Host': 'api.alelo.com.br',
-    'Origin': 'https://redeaceitacao.alelo.com.br',
-    'Referer': 'https://redeaceitacao.alelo.com.br/',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-site',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-    'sec-ch-ua': '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Windows"',
-    'x-ibm-client-id': '76a775cd-8b2c-4ce8-b7a5-b321c66223f7',
-    'Cookie': 'dtCookie=v_4_srv_3_sn_9BC5D4CCED2DEE026B6B076E754DC9C9_perc_100000_ol_0_mul_1_app-3Aea7c4b59f27d43eb_0; a7e2b1664582e63453352cdc14747b5e=149fc99cb62a2dfda246e6f3fc75b1f0; b4a8c8bd365a01af1ce16d38b368df35=320400dd5f58d59b1432b4a3d1135c04'
+        'Accept': 'application/json, text/plain, */*',
+        'Authorization': f'Bearer {token}',
+        'Origin': 'https://redeaceitacao.alelo.com.br',
+        'Referer': 'https://redeaceitacao.alelo.com.br/',
+        'x-ibm-client-id': '76a775cd-8b2c-4ce8-b7a5-b321c66223f7'
     }
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response = requests.get(url, headers=headers, data=payload)
 
     data =  response.json()['establishments']
     base = []
@@ -99,31 +73,15 @@ def get_establishments(token:str ,longitude:str ='-46.6395571', latitude:str= '-
     return base
 
 def get_token():
-    import requests
-
     url = "https://api.alelo.com.br/alelo/prd/cardholders/oauth2/token"
 
     payload='grant_type=client_credentials&client_id=76a775cd-8b2c-4ce8-b7a5-b321c66223f7&client_secret=V2jC1qG2dN2nQ2sK3gE7hR0tI1oO3yT4oF0tA3iI5qK8gD7fX7&scope=acceptance-network'
     headers = {
-    'Accept': 'application/json, text/plain, */*, application/json',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-    'Connection': 'keep-alive',
-    'Content-Length': '166',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Host': 'api.alelo.com.br',
-    'Origin': 'https://redeaceitacao.alelo.com.br',
-    'Referer': 'https://redeaceitacao.alelo.com.br/',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-site',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-    'sec-ch-ua': '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Windows"',
-    'Cookie': 'dtCookie=v_4_srv_3_sn_9BC5D4CCED2DEE026B6B076E754DC9C9_perc_100000_ol_0_mul_1_app-3Aea7c4b59f27d43eb_0; a7e2b1664582e63453352cdc14747b5e=149fc99cb62a2dfda246e6f3fc75b1f0; b4a8c8bd365a01af1ce16d38b368df35=320400dd5f58d59b1432b4a3d1135c04'
-    }
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Origin': 'https://redeaceitacao.alelo.com.br',
+        'Referer': 'https://redeaceitacao.alelo.com.br/',
+}
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.post(url, headers=headers, data=payload)
 
     return response.json()

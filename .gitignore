@@ -4,6 +4,5 @@
 # ignore os pycache também fiotin?
 *.pyc 
 
-*.env
 # ignore a pasta sec
 *.pem

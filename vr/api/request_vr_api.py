@@ -1,7 +1,15 @@
+import os
+import requests
+from dotenv import load_dotenv
+
+# carrega as variáveis de ambientes no script
+load_dotenv(".env")
+
+# carrega a variável de ambiente no script
+URL_VR = os.getenv('URL_VR')
+
 def get_vr(latitude:str='-19.919052', longitude:str='-43.9386685', raio:str='10' ,distancia:str='10'):
-    import requests
-    import json
-    url = "https://mapaec.vrbeneficios.io/search/v3/buscaec?"
+    url = URL_VR
     payload={}
     # parâmetros da consulta    
     params = {
@@ -11,20 +19,10 @@ def get_vr(latitude:str='-19.919052', longitude:str='-43.9386685', raio:str='10'
         'distancia': distancia,
         'produto': '31',
         'termo':''
-        }
+    }
     headers = {
-    'accept': 'application/json, text/plain, */*',
-    'accept-encoding': 'gzip, deflate, br',
-    'accept-language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-    'origin': 'https://portal.vr.com.br',
-    'referer': 'https://portal.vr.com.br/',
-    'sec-ch-ua': '"Chromium";v="112", "Google Chrome";v="112", "Not:A-Brand";v="99"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Windows"',
-    'sec-fetch-dest': 'empty',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'cross-site',
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+        'origin': 'https://portal.vr.com.br',
+        'referer': 'https://portal.vr.com.br/',
     }
 
     response = requests.get(url, headers=headers, params=params)
