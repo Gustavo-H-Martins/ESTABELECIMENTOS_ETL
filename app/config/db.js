@@ -47,6 +47,10 @@ const db = new sqlite3.Database(dbFile, (err) => {
             C.UF AS UF,
             C.TELEFONE AS TELEFONE,
             RFB.TELEFONE AS TELEFONE_RFB,
+            C.SITE AS SITE,
+            C.INSTAGRAM AS INSTAGRAM,
+            C.FACEBOOK AS FACEBOOK,
+            C.URL_DETALHES_PRESTADOR AS URL_DETALHES_PRESTADOR,
             RFB.EMAIL,
             CASE
                 WHEN C.CNPJ THEN "CADASTUR"
