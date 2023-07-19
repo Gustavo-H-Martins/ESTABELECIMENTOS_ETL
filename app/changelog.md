@@ -2,8 +2,25 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [0.1.3.Beta-DEV] - 2023-07-18 [![Static Badge](https://img.shields.io/badge/Desenvolvimento-0.1.2.Beta_Dev-red)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/c3767f08fbded7d823a3ba5f2c260c53824c2b71)
 
+### Adicionado
 
+- Adicionado base `cadastur` e uso de `dotenv` para urls e credentials em geral
+  - [![Static Badge](https://img.shields.io/badge/b8fb8d6-red)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/b8fb8d6ce8948c92708322cc6aa7fd73b160bbcc)
+  - [![Static Badge](https://img.shields.io/badge/0fe6e7b-red)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/0fe6e7b9e057b201a0906d3a6d026decb0585db9)
+  - [![Static Badge](https://img.shields.io/badge/79cdbfa-red)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/79cdbfa88aac08bccdbf270906afa2100b0ce068)
+
+- Adicionado o retorno e parâmetro `cadastur` na api
+  - [![Static Badge](https://img.shields.io/badge/af2bfca-red)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/af2bfcae4e965547a015340cfad8dc2c05333bc9)
+  - [![Static Badge](https://img.shields.io/badge/2376c7a-red)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/2376c7ac3c7e082f8b1a78f44d5ca23dbe67d229)
+### alterado
+- Alterado o campo de bases `bandeiras` >> `origem` na api para compreender as novas bases
+  - [![Static Badge](https://img.shields.io/badge/af2bfca-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/57dd745ae45955daa0beedf731e86ae661f67393)
+
+- Alterado o retorno para retornar os campos `INSTA`, `FACE`, `URL_DETALHES` na api para compreender a nova base `cadastur`
+  - [![Static Badge](https://img.shields.io/badge/af2bfca-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/0f3ef7078ff18da19fcd57f46eacb0d0bc46cd8f)
+  
 ## [0.1.2.Beta] - 2023-07-14 - 2023-07-17 [![Static Badge](https://img.shields.io/badge/Release-0.0.2-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/c3767f08fbded7d823a3ba5f2c260c53824c2b71)
 
 ### Adicionado
@@ -12,9 +29,9 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
   - [![Static Badge](https://img.shields.io/badge/e9f5bd5-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/c3767f08fbded7d823a3ba5f2c260c53824c2b71)
 
 - Adicionado o script de `leitura` e `registro` de _`cache`_
-  - [![Static Badge](https://img.shields.io/badge/c3bd657-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/c3bd657f76218eb784a8d6d7f489ebbd026d19a1)
-  - [![Static Badge](https://img.shields.io/badge/5b630f5-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/5b630f5478b4151ef389000b2cda660e089be793)
-  - [![Static Badge](https://img.shields.io/badge/116533a-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/116533a5ebf5faabf492a23724bfba0059d47eea)
+  - [![Static Badge](https://img.shields.io/badge/c3bd657-red)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/c3bd657f76218eb784a8d6d7f489ebbd026d19a1)
+  - [![Static Badge](https://img.shields.io/badge/5b630f5-red)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/5b630f5478b4151ef389000b2cda660e089be793)
+  - [![Static Badge](https://img.shields.io/badge/116533a-red)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/116533a5ebf5faabf492a23724bfba0059d47eea)
 
 ## [0.1.1.Beta] - 2023-07-11 [![Static Badge](https://img.shields.io/badge/Release-0.0.1-green)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/e9f5bd509a7a0410fc33f0025058d65fbce9ba10)
 
@@ -148,3 +165,8 @@ Correção : Criação de índices para performar as queries
 - Atualização da base `ticket` 
   - [![Static Badge](https://img.shields.io/badge/f9ad03e-white)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/f9ad03e) 
   - [![Static Badge](https://img.shields.io/badge/68b1c02-white)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/68b1c02)
+
+## [PRIMEIRO COMMIT] - 2023-04-04 ![Static Badge](https://img.shields.io/badge/New-0.0.0-white)
+
+- PRIMEIRO COMMIT
+  - [![Static Badge](https://img.shields.io/badge/0ad2d3-white)](https://github.com/Gustavo-H-Martins/ESTABELECIMENTOS_ETL/commit/0ad2d378ecf5895fc77b4b96fc55dd35e17bd9c8)
