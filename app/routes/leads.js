@@ -293,7 +293,7 @@ router.route("/estabelecimentos/counts")
           const cnpj = req.query.cnpj ? [req.query.cnpj.toUpperCase()] : null;
           //const bandeira = req.query.bandeira ? [req.query.bandeira.toLowerCase()] : null;
           // INCLUSÃO DA VALIDAÇÃO DE ENTRADA DE BANDEIRAS
-          const origem = req.query.origem ? req.query.origem.split(",") : null;
+          const origem = req.query.origem ? req.query.origem.split(",") : (req.query.ORIGEM ? req.query.ORIGEM.split(",") : null);
           const origemTuple = origem ? origem.map((valor) => valor.toUpperCase().replace(/-/g, ' ')) : null;
 
           const associados = req.query.associados ? req.query.associados.split(",") : null;
@@ -331,7 +331,7 @@ router.route("/estabelecimentos/counts")
           if (orderby) query = query.replace(";", `ORDER BY TOTAL ${orderby} ;`);
           if (associados == 0) query = query.replace(`ASSOCIADO IN ("0")`, `ASSOCIADO = 0`);
           if (souabrasel == 0) query = query.replace(`SOU_ABRASEL IN ("0")`, `SOU_ABRASEL = 0`);
-          console.log(query)
+          //console.log(query)
 
           db.all(query, (err, rows) => {
             if (err) {
