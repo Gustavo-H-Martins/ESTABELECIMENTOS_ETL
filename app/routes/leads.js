@@ -331,7 +331,7 @@ router.route("/estabelecimentos/counts")
           if (orderby) query = query.replace(";", `ORDER BY TOTAL ${orderby} ;`);
           if (associados == 0) query = query.replace(`ASSOCIADO IN ("0")`, `ASSOCIADO = 0`);
           if (souabrasel == 0) query = query.replace(`SOU_ABRASEL IN ("0")`, `SOU_ABRASEL = 0`);
-          //console.log(query)
+          console.log(query)
 
           db.all(query, (err, rows) => {
             if (err) {
