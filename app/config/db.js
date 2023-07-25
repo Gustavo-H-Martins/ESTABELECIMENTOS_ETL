@@ -77,6 +77,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
         LEFT JOIN tb_rfb RFB ON C.CNPJ = RFB.CNPJ
         LEFT JOIN tb_siga S ON S.CNPJ = C.CNPJ
         LEFT JOIN tb_municipios M ON M.CIDADE = C.CIDADE AND M.UF = C.UF AND M.BAIRRO = C.BAIRRO;
+        
     CREATE VIEW IF NOT EXISTS  TICKET AS
         SELECT 
             RFB.CNPJ AS CNPJ,
