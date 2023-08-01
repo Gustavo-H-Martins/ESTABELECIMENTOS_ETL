@@ -7,3 +7,6 @@ Este projeto não tem licença de uso mais. Consulte o arquivo [LICENSE](./app/l
 ## ☕ ChangeLog
 
 Veja as versões [changelog](./app/changelog.md)
+
+## 🏃‍♂️ AtalhosComando
+[Atalhos](./atalhos.md) úteis deste projeto 
