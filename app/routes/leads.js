@@ -12,6 +12,16 @@ const { salvaCache, lerCache } = require('./cache');
 /**
  * Funções de apoio
  */
+// função para contar o número total de registros
+function countRecords(query, params) {
+  return new Promise((resolve, reject) => {
+    db.get(`SELECT COUNT(*) as total FROM (${query})`, params, (err, row) => {
+      if (err) reject(err);
+      else resolve(row.total);
+    });
+  });
+}
+
 // Função para formatar o valor do CNPJ
 const formatCnpj = (cnpj) => {
   // Remover caracteres não numéricos
@@ -232,52 +242,185 @@ router.route("/estabelecimentos")
     if (conditions.length > 0 && origem === null) query = query.replace(/--/g, ` WHERE ${conditions.join(' AND ')}`);
     if (associados == 0) query = query.replace(`ASSOCIADO IN ("0")`, `ASSOCIADO = 0`);
     if (souabrasel == 0) query = query.replace(`SOU_ABRASEL IN ("0")`, `SOU_ABRASEL = 0`);
-    query += `LIMIT ? OFFSET ?;`;
 
-    db.all(query, [pageSize, offset], async (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      // Transforma a string em um array e remove os espaços em branco
-      rows = rows.map(row => {
-        row.ORIGEM = row.ORIGEM.split(',').map(element => element.trim());
-        return row;
-      });
-      console.log(query)
-      /*
-      // Formatando data e hora para incluir no log
-      const date = new Date()
-      const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // formata a data como DD/MM/AAAA
-      const formattedTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`; // formata a hora como HH:MM:SS
-      dataChamada = `Data: ${formattedDate} - Hora: ${formattedTime}`
-      logToDatabase(clientIp, `Retornando ${rows.length} dados de "${bandeira}" no estado de "${uf}" cidade de ${cidade}`, 'INFO', dataChamada)
-        */
-      // Obter o formato desejado do parâmetro format
-    const formato = req.query.formato ? req.query.formato.toLowerCase(): null;
-    const cabecalho = ["CNPJ", "NOME_FANTASIA", "CIDADE", "BAIRRO", "ENDERECO", "TELEFONE", "EMAIL", "ASSOCIADO", "SOU_ABRASEL", "LINK_GOOGLE", "LINK_GOOGLE_MAPS"]
-    if (formato === 'xlsx') {
-      const xlsx = await jsonToXlsx(rows, cabecalho);
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.status(200).send(
-        xlsx
+    // Assume paginacao as the additional field you want to include
+    const chave_paginacao = true;
+
+    // Combine paginacao with req.query to create cacheParameters
+    const cacheParameters = { ...req.query, chave_paginacao };
+        
+
+    // Omit the 'page' and 'pageSize' parameters from the cacheParameters object
+    delete cacheParameters.page;
+    delete cacheParameters.pageSize;
+
+    // Convert the remaining parameters to JSON and use it as the cacheKey
+    const cacheKey = JSON.stringify(cacheParameters);
+    try {
+      // Check if the pagination information is in the cache
+      const cachedPagination = await lerCache(cacheKey);
+      if (cachedPagination) {
+        console.log("Retornando dados do cache.");
+        // The pagination information is in the cache.
+        // Fetch the rows data from the database.
+        db.all(
+          query + `LIMIT ${pageSize} OFFSET ${offset}`,
+          [],
+          async (err, rows) => {
+            if (err) {
+              res.status(500).json({ error: err.message });
+              return;
+            }
+
+            rows = rows.map((row) => {
+              row.ORIGEM = row.ORIGEM.split(",").map((element) =>
+                element.trim()
+              );
+              return row;
+            });
+            const totalPages = Math.ceil(cachedPagination.totalCount / pageSize);
+
+            // incluindo page e pageSize no pagination
+            cachedPagination.totalPages = totalPages;
+            cachedPagination.currentPage = page;
+            cachedPagination.pageSize = pageSize;
+
+            // Include content-length in the response headers
+            res.setHeader("X-Total-Count", cachedPagination.totalCount);
+            res.setHeader("X-Total-Pages", cachedPagination.totalPages);
+            res.setHeader("Content-Length", JSON.stringify(rows).length);
+
+            
+
+            
+
+            // Create the response object with pagination information and rows data
+            const responseObj = {
+              pagination: cachedPagination,
+              data: rows,
+            };
+
+            // Return the response based on the desired format
+            const formato = req.query.formato
+              ? req.query.formato.toLowerCase()
+              : null;
+            const cabecalho = [
+              "CNPJ",
+              "NOME_FANTASIA",
+              "CIDADE",
+              "BAIRRO",
+              "ENDERECO",
+              "TELEFONE",
+              "EMAIL",
+              "ASSOCIADO",
+              "SOU_ABRASEL",
+              "LINK_GOOGLE",
+              "LINK_GOOGLE_MAPS",
+            ];
+
+            if (formato === "xlsx") {
+              const xlsx = await jsonToXlsx(rows, cabecalho);
+              res.setHeader(
+                "Content-Type",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              );
+              res.status(200).send(xlsx);
+            } else if (formato === "csv") {
+              const csv = jsonToCsv(rows, cabecalho);
+              res.setHeader("Content-Type", "text/csv");
+              res.status(200).send(csv);
+            } else {
+              // If the format is not specified or invalid, send the data as JSON in the response
+              res.status(200).json(responseObj);
+            }
+          }
         );
+      } else {
+        // The pagination information is not in the cache.
+        // Calculate pagination information
+        const totalRecords = await countRecords(query, []);
+        const totalPages = Math.ceil(totalRecords / pageSize);
+
+        // Create an object containing the pagination details
+        const pagination = {
+          totalCount: totalRecords,
+        };
+
+        // Save the pagination information in cache
+        await salvaCache(cacheKey, pagination);
+        
+        // Execute the main query to fetch the paginated data
+        db.all(
+          query + `LIMIT ${pageSize} OFFSET ${offset}`,
+          [],
+          async (err, rows) => {
+            if (err) {
+              res.status(500).json({ error: err.message });
+              return;
+            }
+
+            rows = rows.map((row) => {
+              row.ORIGEM = row.ORIGEM.split(",").map((element) =>
+                element.trim()
+              );
+              return row;
+            });
+
+            // incluindo page e pageSize no pagination
+            pagination.totalPages = totalPages;
+            pagination.currentPage = page;
+            pagination.pageSize = pageSize;
+
+            // Include content-length in the response headers
+            res.setHeader("X-Total-Count", pagination.totalCount);
+            res.setHeader("X-Total-Pages", pagination.totalPages);
+            res.setHeader("Content-Length", JSON.stringify(rows).length);
+            
+            // Create the response object with pagination information and rows data
+            const responseObj = {
+              pagination: pagination,
+              data: rows,
+            };
+
+            // Return the response based on the desired format
+            const formato = req.query.formato
+              ? req.query.formato.toLowerCase()
+              : null;
+            const cabecalho = [
+              "CNPJ",
+              "NOME_FANTASIA",
+              "CIDADE",
+              "BAIRRO",
+              "ENDERECO",
+              "TELEFONE",
+              "EMAIL",
+              "ASSOCIADO",
+              "SOU_ABRASEL",
+              "LINK_GOOGLE",
+              "LINK_GOOGLE_MAPS",
+            ];
+
+            if (formato === "xlsx") {
+              const xlsx = await jsonToXlsx(rows, cabecalho);
+              res.setHeader(
+                "Content-Type",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              );
+              res.status(200).send(xlsx);
+            } else if (formato === "csv") {
+              const csv = jsonToCsv(rows, cabecalho);
+              res.setHeader("Content-Type", "text/csv");
+              res.status(200).send(csv);
+            } else {
+              // If the format is not specified or invalid, send the data as JSON in the response
+              res.status(200).json(responseObj);
+            }
+          }
+        );
+      }
+    } catch (err) {
+      res.status(500).json({ error: "Erro ao ler o cache." });
     }
-    // Se o formato for csv, converter os dados em csv e enviar na resposta
-    else if (formato === 'csv') {
-        const csv = jsonToCsv(rows, cabecalho);
-        res.setHeader('Content-Type', 'text/csv');
-        res.status(200).send(
-          csv
-          );
-    }
-    // Se o formato não for especificado ou for inválido, enviar os dados como json na resposta
-    else {
-        res.status(200).json(
-          rows
-          );
-    }
-    });
   })
 // GetAll-contagem
 router.route("/estabelecimentos/counts")
