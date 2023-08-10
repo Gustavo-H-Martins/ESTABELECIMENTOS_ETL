@@ -32,7 +32,7 @@ dados  = pd.read_csv(base_rfb, sep=";",usecols=cabecalho, dtype="string")
 logging.info(f"Tinham: {dados.shape[0]} dados")
 # Remove os dados duplicados, estranho que sempre aparecem
 dados.drop_duplicates(inplace=True, ignore_index=True)
-dados.drop_duplicates(subset=["CNPJ"])
+dados.drop_duplicates(subset=["CNPJ","RAZAO_SOCIAL","NOME_FANTASIA","ENDERECO","CEP"])
 # coloca tudo em uppercase
 dados["CNAE_DESCRICAO"] = dados["CNAE_DESCRICAO"].str.upper()
 dados["ENDERECO"] = dados["ENDERECO"].str.strip()
