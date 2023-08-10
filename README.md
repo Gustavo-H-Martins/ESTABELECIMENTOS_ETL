@@ -5,8 +5,10 @@
 ## Licença
 Este projeto não tem licença de uso mais. Consulte o arquivo [LICENSE](./app/licence) para mais detalhes.
 ## ☕ ChangeLog
-
 Veja as versões [changelog](./app/changelog.md)
 
 ## 🏃‍♂️ AtalhosComando
 [Atalhos](./atalhos.md) úteis deste projeto 
+
+## 📃📄 Documentação
+[Documentação](./docs/documentacao.md)
