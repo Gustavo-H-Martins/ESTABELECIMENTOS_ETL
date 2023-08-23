@@ -25,3 +25,10 @@
 2023-08-03 11:35:18,171 - DEBUG - Starting new HTTPS connection (1): siga.abrasel.com.br:443
 2023-08-03 11:39:51,781 - DEBUG - Starting new HTTPS connection (1): siga.abrasel.com.br:443
 2023-08-03 11:39:52,856 - DEBUG - https://siga.abrasel.com.br:443 "GET /tools/wsv/associados.jwsv HTTP/1.1" 200 None
+2023-08-21 13:15:23,036 - DEBUG - Starting new HTTPS connection (1): siga.abrasel.com.br:443
+2023-08-21 13:15:23,684 - DEBUG - https://siga.abrasel.com.br:443 "GET /tools/wsv/associados.jwsv HTTP/1.1" 200 None
+2023-08-21 13:16:32,951 - DEBUG - Starting new HTTPS connection (1): siga.abrasel.com.br:443
+2023-08-21 13:16:33,469 - DEBUG - https://siga.abrasel.com.br:443 "GET /tools/wsv/associados.jwsv HTTP/1.1" 200 None
+2023-08-21 13:17:22,386 - DEBUG - Starting new HTTPS connection (1): siga.abrasel.com.br:443
+2023-08-21 13:17:48,101 - DEBUG - Starting new HTTPS connection (1): siga.abrasel.com.br:443
+2023-08-21 13:17:48,619 - DEBUG - https://siga.abrasel.com.br:443 "GET /tools/wsv/associados.jwsv HTTP/1.1" 200 None

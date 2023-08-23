@@ -6,12 +6,11 @@ from dotenv import load_dotenv
 load_dotenv(".env")
 
 # carrega a variável de ambiente no script
-URL_VR = os.getenv("URL_VR")
-ORIGIN_VR = os.getenv("ORIGIN_VR")
+URL_VR = os.environ.get("URL_VR")
+ORIGIN_VR = os.environ.get("ORIGIN_VR")
 
 def get_vr(latitude:str="-19.919052", longitude:str="-43.9386685", raio:str="10" ,distancia:str="10"):
     url = URL_VR
-    payload={}
     # parâmetros da consulta    
     params = {
         "lat": latitude,
@@ -26,23 +25,23 @@ def get_vr(latitude:str="-19.919052", longitude:str="-43.9386685", raio:str="10"
         "referer": f"{ORIGIN_VR}/",
     }
 
-    response = requests.get(url, headers=headers, params=params)
-    data = response.json()["vr_estabelecimentos"]
+    data = requests.get(url, headers=headers, params=params)
     base = []
-    for d in data:
+    
+    for d in data.json():
         base.append({
             "CNPJ" : d["cnpj"],
             "RAZAO_SOCIAL" : d.get("razaoSocial", None),
-            "ESTABELECIMENTOS" : d["nome"], 
-            "ENDERECO" : d["endereco"], 
+            "ESTABELECIMENTOS" : d["nomeFantasia"], 
+            "ENDERECO" : d.get("tipoEnd", "").upper() +  d.get("endereco", "").upper() + " " + d.get("Numero", ""),
             "BAIRRO" : d["bairro"], 
             "CIDADE" : d["cidade"], 
             "UF" : d["estado"], 
             "CEP" : d["cep"], 
-            "TELEFONE" : d["telefone"], 
+            "TELEFONE": d.get("ddd", "") + ", " + d.get("telefone",""),
             "EMAIL": d.get("email", None),
-            "LATITUDE" : d["localizacao"].split(",")[0], 
-            "LONGITUDE" : d["localizacao"].split(",")[1],
+            "LATITUDE" : d.get("latitude", None), 
+            "LONGITUDE" : d.get("longitude", None),
             "BANDEIRA": "VR"
         })
     return base

@@ -8,8 +8,8 @@ env = os.path.dirname(os.path.abspath(__file__)).replace(r"siga\api", ".env")
 load_dotenv(env)
 
 # carrega a variável da chave de api no script
-API_KEY_LEADS_SIGA = os.getenv("API_KEY_LEADS_SIGA")
-URL_SIGA = os.getenv("URL_SIGA")
+API_KEY_LEADS_SIGA = os.environ.get("API_KEY_LEADS_SIGA")
+URL_SIGA = os.environ.get("URL_SIGA")
 def get_siga(chave:str = API_KEY_LEADS_SIGA):
     import requests
     #Conexão com api siga.

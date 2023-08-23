@@ -37,32 +37,31 @@ with open(file_localidades,'r', encoding='UTF-8') as municipios:
 
 # definindo o paralelismo
 def processo(municipio):
-    #try:
-    localidade = municipio.split('\t')
-    logging.info(f'pegando dados de {localidade[0]}')
-    base = get_vr(latitude=localidade[3].replace('\n', ''), longitude=localidade[2],raio=10)
-    dados = pl.DataFrame(base)
+    try:
+        localidade = municipio.split('\t')
+        logging.info(f'pegando dados de {localidade[0]}')
+        base = get_vr(latitude=localidade[3].replace('\n', ''), longitude=localidade[2])
+        dados = pl.DataFrame(base)
 
-    # Salvar em csv em modo incremental
-    if os.path.isfile(file_dados) and os.path.getsize(file_dados) > 0:
-        """
-            Se o arquivo já existir e tiver algum tamanho,
-            escrever o dataframe sem cabeçalho
-        """
-        with open(file_dados, mode="ab") as f:
-            dados.write_csv(f, has_header=False, separator=';', batch_size=1024)
-    else:
-        """
-            Se o arquivo não existir ou estiver vazio,
-            escrever o dataframe com cabeçalho
-            Adicionar o dataframe ao arquivo CSV existente
-        """
-        dados.write_csv(file_dados,separator=';', batch_size=1024)
-    """
+        # Salvar em csv em modo incremental
+        if os.path.isfile(file_dados) and os.path.getsize(file_dados) > 0:
+            """
+                Se o arquivo já existir e tiver algum tamanho,
+                escrever o dataframe sem cabeçalho
+            """
+            with open(file_dados, mode="ab") as f:
+                dados.write_csv(f, has_header=False, separator=';', batch_size=1024)
+        else:
+            """
+                Se o arquivo não existir ou estiver vazio,
+                escrever o dataframe com cabeçalho
+                Adicionar o dataframe ao arquivo CSV existente
+            """
+            dados.write_csv(file_dados,separator=';', batch_size=1024)
+    
     except Exception as e:
         logging.warning(f"deu erro aqui : [{e}]")
         pass
-    """
 if __name__ == '__main__':
     with multiprocessing.Pool(processes=3) as pool:
         pool.map(processo, localidades)
