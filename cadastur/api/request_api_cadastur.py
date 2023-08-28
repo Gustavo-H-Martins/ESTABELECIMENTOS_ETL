@@ -5,11 +5,11 @@ from dotenv import load_dotenv
 from unidecode import unidecode
 
 # carrega as variáveis de ambientes no script
-load_dotenv(".env")
+load_dotenv()
 
 # carrega a variável de ambiente no script
-URL_CADASTUR = os.getenv("URL_CADASTUR")
-ORIGIN_CADASTUR = os.getenv("ORIGIN_CADASTUR")
+URL_CADASTUR = os.environ.get("URL_CADASTUR")
+ORIGIN_CADASTUR = os.environ.get("ORIGIN_CADASTUR")
 
 def formata_cnpj(cnpj:str=None):
     """Retorna o CNPJ Formatado no formato Brasileiro"""

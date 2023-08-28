@@ -143,13 +143,13 @@ class EXTRATOR_CNPJ:
 
     def download(self, url: str = None, destino: str = None):
         ### Com requests
-       
+        """
         import requests
         with requests.get(url, stream=True) as response:
             with open(destino, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=32768):
+                for chunk in response.iter_content(chunk_size=65576):
                     f.write(chunk)
-
+        """
         
         """
         ### Com urllib
@@ -162,13 +162,13 @@ class EXTRATOR_CNPJ:
         
         """
 
-        """
+        
         ### Com SmartDL
         from pySmartDL import SmartDL
 
         obj = SmartDL(url, destino, threads=6, progress_bar=False)
         obj.start()
-        """
+        
         return destino
 
     def run(self):

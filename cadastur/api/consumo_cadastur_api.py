@@ -4,12 +4,29 @@ import pandas as pd
 import os
 import logging
 import sqlite3
+
 # obteendo o caminho do diretório atual e construindo o caminho do arquivo a partir dele
 current_dir = os.path.dirname(os.path.abspath(__file__))
-db_file = current_dir.replace(r"cadastur\api", r"app\files\database.db")
-
+db_file = current_dir.replace(r"cadastur/api", r"app/files/database.db")
+db_dir = current_dir.replace(r"cadastur/api", r"app/files")
 file_dados = current_dir.replace(r"api", r"dados/base_cadastur.csv")
-file_logs = current_dir.replace(r"cadastur\api",r"logs\cadastur.log")
+file_logs = current_dir.replace(r"cadastur/api",r"logs/cadastur.log")
+file_dir = current_dir.replace(r"cadastur/api",r"logs")
+
+
+def touch_file(filename):
+    with open(filename, 'a'):
+        os.utime(filename, None)
+
+
+if not os.path.exists(db_dir):
+                    os.makedirs(db_dir)
+
+if not os.path.exists(file_dir):
+                    os.makedirs(file_dir)
+
+touch_file(db_file)
+
 conn = sqlite3.connect(database=db_file)
 
 # configurando o registro de logs

@@ -1,0 +1,17 @@
+services:
+  cadastur:
+    build:
+      context: .
+    image: cadastur-image
+    container_name: cadastur-container
+    volumes:
+      - cadastur-volume:/usr/src/cadastur
+
+volumes:
+  cadastur-volume:
+    name: cadastur-volume
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '.'
