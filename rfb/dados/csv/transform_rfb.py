@@ -62,7 +62,7 @@ O parâmetro dtype define o tipo de cada coluna na tabela
 """
 dados.to_sql("tb_rfb", conn, 
              if_exists="replace", index=False, 
-             dtype={"CNPJ": "TEXT PRIMARY KEY", 
+             dtype={"CNPJ": "TEXT", #PRIMARY KEY", 
                     "RAZAO_SOCIAL": "TEXT", "NOME_FANTASIA": "TEXT", 
                     "ENDERECO": "TEXT", "BAIRRO": "TEXT", "CIDADE": "TEXT", 
                     "UF": "TEXT", "CEP": "TEXT", 
