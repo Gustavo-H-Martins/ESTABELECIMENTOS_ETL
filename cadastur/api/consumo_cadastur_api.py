@@ -13,7 +13,6 @@ file_dados = current_dir.replace(r"api", r"dados/base_cadastur.csv")
 file_logs = current_dir.replace(r"cadastur/api",r"logs/cadastur.log")
 file_dir = current_dir.replace(r"cadastur/api",r"logs")
 
-
 def touch_file(filename):
     with open(filename, 'a'):
         os.utime(filename, None)

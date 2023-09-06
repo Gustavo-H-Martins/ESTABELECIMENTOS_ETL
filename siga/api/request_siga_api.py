@@ -2,10 +2,8 @@
 import os
 from dotenv import load_dotenv
 
-env = os.path.dirname(os.path.abspath(__file__)).replace(r"siga\api", ".env")
-
 # carrega variáveis de ambiente no script
-load_dotenv(env)
+load_dotenv()
 
 # carrega a variável da chave de api no script
 API_KEY_LEADS_SIGA = os.environ.get("API_KEY_LEADS_SIGA")
