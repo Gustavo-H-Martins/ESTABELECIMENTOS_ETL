@@ -5,12 +5,20 @@ import os
 import logging
 import sqlite3
 # obteendo o caminho do diretório atual e construindo o caminho do arquivo a partir dele
-current_dir = os.path.dirname(os.path.abspath(__file__))
-db_file = current_dir.replace(r"siga/api", r"app/files/database.db")
-db_dir = current_dir.replace(r"siga/api", r"app/files")
-file_dados = current_dir.replace(r"api", r"dados/base_siga.csv")
-file_logs = current_dir.replace(r"siga/api",r"logs/cadastur.log")
-file_dir = current_dir.replace(r"siga/api",r"logs")
+"""current_dir = os.path.dirname(os.path.abspath(__file__))
+current_dir = current_dir.replace("siga/api", "app/files/database.db")
+db_dir = current_dir.replace("siga/api", "app/iles")
+file_dados = current_dir.replace("api", "dados/base_siga.csv")
+file_logs = current_dir.replace("siga/api","logs/siga.log")
+file_dir = current_dir.replace("siga/api","logs")
+"""
+
+current_dir = os.path.normpath(os.path.dirname(os.path.abspath(__file__)))
+db_dir = os.path.normpath(os.path.join(current_dir, '..', '..', 'app', 'files'))
+db_file = os.path.normpath(os.path.join(db_dir, 'database.db'))
+file_dados = os.path.normpath(os.path.join(current_dir, '..', 'dados', 'base_siga.csv'))
+file_logs = os.path.normpath(os.path.join(current_dir, '..', '..', 'logs', 'siga.log'))
+file_dir = os.path.normpath(os.path.join(current_dir, '..', '..', 'logs'))
 
 def touch_file(filename):
     with open(filename, 'a'):

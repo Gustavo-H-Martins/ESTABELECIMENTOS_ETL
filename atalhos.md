@@ -108,3 +108,12 @@
     # Remove a rede chamada cadastur-networ
     sudo docker network rm cadastur-network
 ```
+
+## Atualizar permissão de arquivo
+``` bash
+    # Dar permissão apenas para o proprietário usar
+    chmod 600 ~/arquivo
+
+    # Copia um arquivo de uma banda pra outras
+    cp origem/file destino/file
+```

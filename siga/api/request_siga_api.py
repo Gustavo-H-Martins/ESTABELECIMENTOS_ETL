@@ -20,18 +20,18 @@ def get_siga(chave:str = API_KEY_LEADS_SIGA):
     base = []
     for d in data:
         base.append({
-        "SEC_REG" : d["S/R"].upper() if d["S/R"] else "",
-        "NOME_FANTASIA" : d["Nome Fantasia"].upper() if d["Nome Fantasia"] else "",
-        "RAZAO_SOCIAL" : d["Razão Social"].upper() if d["Razão Social"] else "",
-        "CNPJ" : d["CNPJ"] if d["CNPJ"] else "",
-        "ENDERECO" : d["Logradouro"].upper() if d["Logradouro"] else "" + ", " + d["Numero"].upper() if d["Numero"] else "" + "" + d["Comp."].upper() if d["Comp."] else "",
-        "BAIRRO" : d["Bairro"].upper() if d["Bairro"] else "",
-        "CEP" : d["CEP"] if d["CEP"] else "" ,
-        "CIDADE" : d["Cidade"].upper() if d["Cidade"] else "",
-        "UF" : d["UF"].upper() if d["UF"] else "",
-        "ASSOCIADO": d["Status"].upper(),
-        "SOU_ABRASEL": d["Status_SouAbrasel"].upper()
+            "SEC_REG": d.get("S/R", "não informado").upper(),
+            "NOME_FANTASIA": d.get("Nome Fantasia", ""),
+            "CNPJ": d.get("CNPJ", "não informado"),
+            "ENDERECO": f"{d.get('Logradouro', '')}, {d.get('Numero', 'SN')} {d.get('Comp.', '')}".upper(),
+            "BAIRRO": d.get("Bairro", "não informado"),
+            "CEP": d.get("CEP", "não informado"),
+            "CIDADE": d.get("Cidade", "não informado"),
+            "UF": d.get("UF", "não informado"),
+            "ASSOCIADO": d["Status"].upper(),
+            "SOU_ABRASEL": d["Status_SouAbrasel"].upper()
         })
+
     return base
 
 
