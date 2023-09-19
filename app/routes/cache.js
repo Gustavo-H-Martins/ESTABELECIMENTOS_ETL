@@ -6,7 +6,7 @@ function salvaCache(query, data) {
   
     // Verifique se a tabela de cache existe. Se não existir, crie-a.
     db.serialize(() => {
-      db.run(`CREATE TABLE IF NOT EXISTS ${tableName} (query TEXT PRIMARY KEY, data TEXT)`, (err) => {
+      db.run(`CREATE TEMPORARY TABLE IF NOT EXISTS ${tableName} (query TEXT PRIMARY KEY, data TEXT)`, (err) => {
         if (err) {
           console.error('Erro ao criar tabela de cache:', err.message);
           return;

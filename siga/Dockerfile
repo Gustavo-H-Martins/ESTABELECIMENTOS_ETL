@@ -2,7 +2,7 @@
 # Docker Run: sudo docker run -dit --name siga-container siga-image
 # Flags: -t telemetria TTY, -d detach, -i interative
 
-FROM python:3.9-slim
+FROM database-image:latest
 
 WORKDIR /usr/src/siga
 
@@ -20,5 +20,10 @@ RUN mkdir -p ~/.ssh && \
 COPY . .
 COPY apiLeads.pem ./
 RUN chmod 600 apiLeads.pem
+RUN mkdir -p /usr/src/app/files/
+
 # Comando para manter o container ativo após finalizar o script : tail -f /dev/null
-CMD ["sh", "-c", "python ./api/consumo_siga_api.py && scp -i ./apiLeads.pem /usr/src/app/files/database.db ubuntu@ec2-52-67-164-51.sa-east-1.compute.amazonaws.com:/home/ubuntu/app/files && echo CORREU TUDO BEM AQUI PAIZÃO!!!"] 
+CMD ["sh", "-c", "python ./api/consumo_siga_api.py && scp -i ./apiLeads.pem /usr/src/app/files/database.db ubuntu@ec2-52-67-164-51.sa-east-1.compute.amazonaws.com:/home/ubuntu/app/files"]
+
+# Rodar esse docker run:
+# sudo docker run -dit --name siga-container -v "$(pwd)":/usr/src/siga -v "$(pwd)"/../app/files:/usr/src/app/files siga-image

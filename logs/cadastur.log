@@ -55,3 +55,5 @@
 2023-09-08 15:03:50,297 - DEBUG - https://siga.abrasel.com.br:443 "GET /tools/wsv/associados.jwsv HTTP/1.1" 200 None
 2023-09-08 15:04:52,007 - DEBUG - Starting new HTTPS connection (1): siga.abrasel.com.br:443
 2023-09-08 15:04:52,580 - DEBUG - https://siga.abrasel.com.br:443 "GET /tools/wsv/associados.jwsv HTTP/1.1" 200 None
+2023-09-17 23:53:47,090 - DEBUG - Starting new HTTPS connection (1): cadastur.turismo.gov.br:443
+2023-09-17 23:53:56,335 - DEBUG - https://cadastur.turismo.gov.br:443 "POST /cadastur-backend/rest/portal/obterDadosPrestadores HTTP/1.1" 200 None

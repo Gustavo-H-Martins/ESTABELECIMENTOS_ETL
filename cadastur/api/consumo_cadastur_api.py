@@ -5,6 +5,7 @@ import os
 import logging
 import sqlite3
 
+"""
 # obteendo o caminho do diretório atual e construindo o caminho do arquivo a partir dele
 current_dir = os.path.dirname(os.path.abspath(__file__))
 db_file = current_dir.replace(r"cadastur/api", r"app/files/database.db")
@@ -12,6 +13,15 @@ db_dir = current_dir.replace(r"cadastur/api", r"app/files")
 file_dados = current_dir.replace(r"api", r"dados/base_cadastur.csv")
 file_logs = current_dir.replace(r"cadastur/api",r"logs/cadastur.log")
 file_dir = current_dir.replace(r"cadastur/api",r"logs")
+"""
+
+current_dir = os.path.normpath(os.path.dirname(os.path.abspath(__file__)))
+db_dir = os.path.normpath(os.path.join(current_dir, '..', '..', 'app', 'files'))
+db_file = os.path.normpath(os.path.join(db_dir, 'database.db'))
+file_dados = os.path.normpath(os.path.join(current_dir, '..', 'dados', 'base_cadastur.csv'))
+file_logs = os.path.normpath(os.path.join(current_dir, '..', '..', 'logs', 'cadastur.log'))
+file_dir = os.path.normpath(os.path.join(current_dir, '..', '..', 'logs'))
+
 
 def touch_file(filename):
     with open(filename, 'a'):
