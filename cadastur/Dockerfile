@@ -20,8 +20,8 @@ COPY . .
 COPY apiLeads.pem ./
 RUN chmod 600 apiLeads.pem
 RUN mkdir -p /usr/src/app/files/
-# RUN scp -i ./apiLeads.pem ubuntu@ec2-52-67-164-51.sa-east-1.compute.amazonaws.com:/home/ubuntu/app/files/backup/database.db /usr/src/app/files/
 
+# Comando para manter o container ativo após finalizar o script : tail -f /dev/null
 CMD ["sh", "-c", "python ./api/consumo_cadastur_api.py && scp -i ./apiLeads.pem /usr/src/app/files/database.db ubuntu@ec2-52-67-164-51.sa-east-1.compute.amazonaws.com:/home/ubuntu/app/files"]
 
 # Rodar esse docker run:
